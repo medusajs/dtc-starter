@@ -25,8 +25,6 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    // Disable image optimization for Cloudflare Workers
-    // Images will be served directly from their source URLs
     unoptimized: true,
     remotePatterns: [
       {
