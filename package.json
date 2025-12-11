@@ -1,0 +1,16 @@
+{
+  "name": "dtc-starter-monorepo",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "pnpm -r dev",
+    "build": "pnpm -r build",
+    "dev:backend": "pnpm --filter @dtc/backend dev",
+    "dev:storefront": "pnpm --filter @dtc/storefront dev",
+    "build:backend": "pnpm --filter @dtc/backend build",
+    "build:storefront": "pnpm --filter @dtc/storefront build"
+  }
+}
