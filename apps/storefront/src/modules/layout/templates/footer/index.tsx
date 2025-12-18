@@ -1,15 +1,15 @@
-import { listCategories } from "@lib/data/categories"
-import { listCollections } from "@lib/data/collections"
-import { Text, clx } from "@modules/common/components/ui"
+import { listCategories } from "@lib/data/categories";
+import { listCollections } from "@lib/data/collections";
+import { Text, clx } from "@modules/common/components/ui";
 
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import MedusaCTA from "@modules/layout/components/medusa-cta"
+import LocalizedClientLink from "@modules/common/components/localized-client-link";
+import MedusaCTA from "@modules/layout/components/medusa-cta";
 
 export default async function Footer() {
   const { collections } = await listCollections({
     fields: "*products",
-  })
-  const productCategories = await listCategories()
+  });
+  const productCategories = await listCategories();
 
   return (
     <footer className="border-t border-ui-border-base w-full">
@@ -35,7 +35,7 @@ export default async function Footer() {
                 >
                   {productCategories?.slice(0, 6).map((c) => {
                     if (c.parent_category) {
-                      return
+                      return;
                     }
 
                     const children =
@@ -43,7 +43,7 @@ export default async function Footer() {
                         name: child.name,
                         handle: child.handle,
                         id: child.id,
-                      })) || null
+                      })) || null;
 
                     return (
                       <li
@@ -77,7 +77,7 @@ export default async function Footer() {
                           </ul>
                         )}
                       </li>
-                    )
+                    );
                   })}
                 </ul>
               </div>
@@ -133,7 +133,7 @@ export default async function Footer() {
                 </li>
                 <li>
                   <a
-                    href="https://github.com/medusajs/nextjs-starter-medusa"
+                    href="https://github.com/medusajs/dtc-starter"
                     target="_blank"
                     rel="noreferrer"
                     className="hover:text-ui-fg-base"
@@ -153,5 +153,5 @@ export default async function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }

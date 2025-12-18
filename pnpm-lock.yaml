@@ -6,7 +6,14 @@ settings:
 
 importers:
 
-  .: {}
+  .:
+    devDependencies:
+      prettier:
+        specifier: ^3.2.5
+        version: 3.7.4
+      turbo:
+        specifier: ^2.0.14
+        version: 2.6.3
 
   apps/backend:
     dependencies:
@@ -24,13 +31,13 @@ importers:
         version: 2.12.2(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(typescript@5.9.3)
       '@medusajs/draft-order':
         specifier: 2.12.2
-        version: 2.12.2(@medusajs/admin-sdk@2.12.2)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))(@medusajs/icons@2.12.2(react@18.3.1))(@medusajs/test-utils@2.12.2)(@medusajs/ui@4.0.30(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react-router-dom@6.20.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
+        version: 2.12.2(p6czxenh22dblv3zsibkafxl7u)
       '@medusajs/framework':
         specifier: 2.12.2
         version: 2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1))
       '@medusajs/medusa':
         specifier: 2.12.2
-        version: 2.12.2(@medusajs/admin-sdk@2.12.2)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))(@medusajs/icons@2.12.2(react@18.3.1))(@medusajs/test-utils@2.12.2)(@medusajs/ui@4.0.30(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))(@swc/core@1.15.3(@swc/helpers@0.5.17))(@types/node@20.19.26)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(awilix@8.0.1)(posthog-node@5.17.2)(react-dom@18.3.1(react@18.3.1))(react-router-dom@6.20.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(terser@5.44.1)(typescript@5.9.3)(yalc@1.0.0-pre.53)
+        version: 2.12.2(@medusajs/admin-sdk@2.12.2)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))(@medusajs/icons@2.12.2(react@18.3.1))(@medusajs/test-utils@2.12.2)(@medusajs/ui@4.0.30(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))(@swc/core@1.15.3(@swc/helpers@0.5.17))(@types/node@20.19.26)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(awilix@8.0.1)(posthog-node@5.17.2)(react-dom@18.3.1(react@18.3.1))(react-router-dom@6.20.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(terser@5.44.1)(typescript@5.9.3)(yalc@1.0.0-pre.53)(yaml@2.8.2)
     devDependencies:
       '@medusajs/test-utils':
         specifier: 2.12.2
@@ -134,7 +141,7 @@ importers:
         version: 7.28.5
       '@medusajs/types':
         specifier: latest
-        version: 2.12.2(ioredis@5.8.2)(vite@5.4.21(@types/node@17.0.21)(terser@5.44.1))
+        version: 2.12.2(ioredis@5.8.2)(vite@5.4.21(@types/node@17.0.21))
       '@types/lodash':
         specifier: ^4.14.195
         version: 4.17.21
@@ -7254,6 +7261,11 @@ packages:
     engines: {node: '>=10.13.0'}
     hasBin: true
 
+  prettier@3.7.4:
+    resolution: {integrity: sha512-v6UNi1+3hSlVvv8fSaoUbggEM5VErKmmpGA7Pl3HF8V6uKY7rvClBOJlH6yNwQtfTueNkGVpOv/mtWL9L4bgRA==}
+    engines: {node: '>=14'}
+    hasBin: true
+
   pretty-format@29.7.0:
     resolution: {integrity: sha512-Pdlw/oPxN+aXdmM9R00JVC9WVFoCLTKJvDVLgmJ+qAffBMxsV85l/Lu7sNx4zSzPyoL2euImuEwHhOXdEgNFZQ==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -8067,6 +8079,40 @@ packages:
 
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
+
+  turbo-darwin-64@2.6.3:
+    resolution: {integrity: sha512-BlJJDc1CQ7SK5Y5qnl7AzpkvKSnpkfPmnA+HeU/sgny3oHZckPV2776ebO2M33CYDSor7+8HQwaodY++IINhYg==}
+    cpu: [x64]
+    os: [darwin]
+
+  turbo-darwin-arm64@2.6.3:
+    resolution: {integrity: sha512-MwVt7rBKiOK7zdYerenfCRTypefw4kZCue35IJga9CH1+S50+KTiCkT6LBqo0hHeoH2iKuI0ldTF2a0aB72z3w==}
+    cpu: [arm64]
+    os: [darwin]
+
+  turbo-linux-64@2.6.3:
+    resolution: {integrity: sha512-cqpcw+dXxbnPtNnzeeSyWprjmuFVpHJqKcs7Jym5oXlu/ZcovEASUIUZVN3OGEM6Y/OTyyw0z09tOHNt5yBAVg==}
+    cpu: [x64]
+    os: [linux]
+
+  turbo-linux-arm64@2.6.3:
+    resolution: {integrity: sha512-MterpZQmjXyr4uM7zOgFSFL3oRdNKeflY7nsjxJb2TklsYqiu3Z9pQ4zRVFFH8n0mLGna7MbQMZuKoWqqHb45w==}
+    cpu: [arm64]
+    os: [linux]
+
+  turbo-windows-64@2.6.3:
+    resolution: {integrity: sha512-biDU70v9dLwnBdLf+daoDlNJVvqOOP8YEjqNipBHzgclbQlXbsi6Gqqelp5er81Qo3BiRgmTNx79oaZQTPb07Q==}
+    cpu: [x64]
+    os: [win32]
+
+  turbo-windows-arm64@2.6.3:
+    resolution: {integrity: sha512-dDHVKpSeukah3VsI/xMEKeTnV9V9cjlpFSUs4bmsUiLu3Yv2ENlgVEZv65wxbeE0bh0jjpmElDT+P1KaCxArQQ==}
+    cpu: [arm64]
+    os: [win32]
+
+  turbo@2.6.3:
+    resolution: {integrity: sha512-bf6YKUv11l5Xfcmg76PyWoy/e2vbkkxFNBGJSnfdSXQC33ZiUfutYh6IXidc5MhsnrFkWfdNNLyaRk+kHMLlwA==}
+    hasBin: true
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -10079,7 +10125,7 @@ snapshots:
 
   '@js-sdsl/ordered-map@4.4.2': {}
 
-  '@medusajs/admin-bundler@2.12.2(@types/node@20.19.26)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(terser@5.44.1)(typescript@5.9.3)':
+  '@medusajs/admin-bundler@2.12.2(@types/node@20.19.26)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(terser@5.44.1)(typescript@5.9.3)(yaml@2.8.2)':
     dependencies:
       '@medusajs/admin-shared': 2.12.2
       '@medusajs/admin-vite-plugin': 2.12.2(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1))
@@ -10333,7 +10379,7 @@ snapshots:
       - supports-color
       - tedious
 
-  '@medusajs/draft-order@2.12.2(@medusajs/admin-sdk@2.12.2)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))(@medusajs/icons@2.12.2(react@18.3.1))(@medusajs/test-utils@2.12.2)(@medusajs/ui@4.0.30(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react-router-dom@6.20.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)':
+  '@medusajs/draft-order@2.12.2(p6czxenh22dblv3zsibkafxl7u)':
     dependencies:
       '@ariakit/react': 0.4.20(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@babel/runtime': 7.28.4
@@ -10483,11 +10529,11 @@ snapshots:
     dependencies:
       '@medusajs/framework': 2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1))
 
-  '@medusajs/medusa@2.12.2(@medusajs/admin-sdk@2.12.2)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))(@medusajs/icons@2.12.2(react@18.3.1))(@medusajs/test-utils@2.12.2)(@medusajs/ui@4.0.30(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))(@swc/core@1.15.3(@swc/helpers@0.5.17))(@types/node@20.19.26)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(awilix@8.0.1)(posthog-node@5.17.2)(react-dom@18.3.1(react@18.3.1))(react-router-dom@6.20.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(terser@5.44.1)(typescript@5.9.3)(yalc@1.0.0-pre.53)':
+  '@medusajs/medusa@2.12.2(@medusajs/admin-sdk@2.12.2)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))(@medusajs/icons@2.12.2(react@18.3.1))(@medusajs/test-utils@2.12.2)(@medusajs/ui@4.0.30(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))(@swc/core@1.15.3(@swc/helpers@0.5.17))(@types/node@20.19.26)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(awilix@8.0.1)(posthog-node@5.17.2)(react-dom@18.3.1(react@18.3.1))(react-router-dom@6.20.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(terser@5.44.1)(typescript@5.9.3)(yalc@1.0.0-pre.53)(yaml@2.8.2)':
     dependencies:
       '@inquirer/checkbox': 2.5.0
       '@inquirer/input': 2.3.0
-      '@medusajs/admin-bundler': 2.12.2(@types/node@20.19.26)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(terser@5.44.1)(typescript@5.9.3)
+      '@medusajs/admin-bundler': 2.12.2(@types/node@20.19.26)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(terser@5.44.1)(typescript@5.9.3)(yaml@2.8.2)
       '@medusajs/analytics': 2.12.2(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))
       '@medusajs/analytics-local': 2.12.2(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))
       '@medusajs/analytics-posthog': 2.12.2(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))(posthog-node@5.17.2)
@@ -10504,7 +10550,7 @@ snapshots:
       '@medusajs/core-flows': 2.12.2(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))
       '@medusajs/currency': 2.12.2(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))
       '@medusajs/customer': 2.12.2(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))
-      '@medusajs/draft-order': 2.12.2(@medusajs/admin-sdk@2.12.2)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))(@medusajs/icons@2.12.2(react@18.3.1))(@medusajs/test-utils@2.12.2)(@medusajs/ui@4.0.30(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react-router-dom@6.20.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
+      '@medusajs/draft-order': 2.12.2(p6czxenh22dblv3zsibkafxl7u)
       '@medusajs/event-bus-local': 2.12.2(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))
       '@medusajs/event-bus-redis': 2.12.2(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))
       '@medusajs/file': 2.12.2(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))
@@ -10717,7 +10763,7 @@ snapshots:
       ulid: 2.4.0
     optionalDependencies:
       '@medusajs/core-flows': 2.12.2(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))
-      '@medusajs/medusa': 2.12.2(@medusajs/admin-sdk@2.12.2)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))(@medusajs/icons@2.12.2(react@18.3.1))(@medusajs/test-utils@2.12.2)(@medusajs/ui@4.0.30(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))(@swc/core@1.15.3(@swc/helpers@0.5.17))(@types/node@20.19.26)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(awilix@8.0.1)(posthog-node@5.17.2)(react-dom@18.3.1(react@18.3.1))(react-router-dom@6.20.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(terser@5.44.1)(typescript@5.9.3)(yalc@1.0.0-pre.53)
+      '@medusajs/medusa': 2.12.2(@medusajs/admin-sdk@2.12.2)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))(@medusajs/icons@2.12.2(react@18.3.1))(@medusajs/test-utils@2.12.2)(@medusajs/ui@4.0.30(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))(@swc/core@1.15.3(@swc/helpers@0.5.17))(@types/node@20.19.26)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(awilix@8.0.1)(posthog-node@5.17.2)(react-dom@18.3.1(react@18.3.1))(react-router-dom@6.20.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(terser@5.44.1)(typescript@5.9.3)(yalc@1.0.0-pre.53)(yaml@2.8.2)
     transitivePeerDependencies:
       - debug
       - supports-color
@@ -10726,12 +10772,12 @@ snapshots:
     dependencies:
       '@medusajs/framework': 2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1))
 
-  '@medusajs/types@2.12.2(ioredis@5.8.2)(vite@5.4.21(@types/node@17.0.21)(terser@5.44.1))':
+  '@medusajs/types@2.12.2(ioredis@5.8.2)(vite@5.4.21(@types/node@17.0.21))':
     dependencies:
       bignumber.js: 9.3.1
     optionalDependencies:
       ioredis: 5.8.2
-      vite: 5.4.21(@types/node@17.0.21)(terser@5.44.1)
+      vite: 5.4.21(@types/node@17.0.21)
 
   '@medusajs/types@2.12.2(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1))':
     dependencies:
@@ -15563,7 +15609,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.49.0(eslint@8.10.0)(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@8.10.0):
+  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.49.0(eslint@8.10.0)(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0)(eslint@8.10.0))(eslint@8.10.0):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
@@ -15585,7 +15631,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.10.0
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.49.0(eslint@8.10.0)(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@8.10.0)
+      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.49.0(eslint@8.10.0)(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0)(eslint@8.10.0))(eslint@8.10.0)
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
@@ -17637,6 +17683,8 @@ snapshots:
 
   prettier@2.8.8: {}
 
+  prettier@3.7.4: {}
+
   pretty-format@29.7.0:
     dependencies:
       '@jest/schemas': 29.6.3
@@ -18676,6 +18724,33 @@ snapshots:
 
   tslib@2.8.1: {}
 
+  turbo-darwin-64@2.6.3:
+    optional: true
+
+  turbo-darwin-arm64@2.6.3:
+    optional: true
+
+  turbo-linux-64@2.6.3:
+    optional: true
+
+  turbo-linux-arm64@2.6.3:
+    optional: true
+
+  turbo-windows-64@2.6.3:
+    optional: true
+
+  turbo-windows-arm64@2.6.3:
+    optional: true
+
+  turbo@2.6.3:
+    optionalDependencies:
+      turbo-darwin-64: 2.6.3
+      turbo-darwin-arm64: 2.6.3
+      turbo-linux-64: 2.6.3
+      turbo-linux-arm64: 2.6.3
+      turbo-windows-64: 2.6.3
+      turbo-windows-arm64: 2.6.3
+
   type-check@0.4.0:
     dependencies:
       prelude-ls: 1.2.1
@@ -18856,7 +18931,7 @@ snapshots:
 
   vary@1.1.2: {}
 
-  vite@5.4.21(@types/node@17.0.21)(terser@5.44.1):
+  vite@5.4.21(@types/node@17.0.21):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.5.6
@@ -18864,7 +18939,6 @@ snapshots:
     optionalDependencies:
       '@types/node': 17.0.21
       fsevents: 2.3.3
-      terser: 5.44.1
     optional: true
 
   vite@5.4.21(@types/node@20.19.26)(terser@5.44.1):

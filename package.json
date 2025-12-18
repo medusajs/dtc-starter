@@ -1,16 +1,22 @@
 {
   "name": "dtc-starter-monorepo",
-  "private": true,
-  "packageManager": "pnpm@9.15.4",
+  "private": false,
+  "packageManager": "pnpm@10.9.2",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
     "dev": "pnpm -r dev",
     "build": "pnpm -r build",
-    "dev:backend": "pnpm --filter @dtc/backend dev",
-    "dev:storefront": "pnpm --filter @dtc/storefront dev",
-    "build:backend": "pnpm --filter @dtc/backend build",
-    "build:storefront": "pnpm --filter @dtc/storefront build"
+    "start": "turbo start",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "backend:seed": "turbo seed --filter=@dtc/backend",
+    "backend:dev": "turbo dev --filter=@dtc/backend",
+    "storefront:dev": "turbo dev --filter=@dtc/storefront"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.14",
+    "prettier": "^3.2.5"
   }
 }
