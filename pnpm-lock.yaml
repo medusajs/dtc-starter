@@ -23,6 +23,9 @@ importers:
       '@medusajs/admin-shared':
         specifier: 2.12.2
         version: 2.12.2
+      '@medusajs/caching':
+        specifier: 2.12.2
+        version: 2.12.2(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))(awilix@8.0.1)
       '@medusajs/cli':
         specifier: 2.12.2
         version: 2.12.2(@types/node@20.19.26)
@@ -95,7 +98,7 @@ importers:
         version: 2.12.2(react@19.0.1)
       '@medusajs/js-sdk':
         specifier: latest
-        version: 2.12.2
+        version: 2.12.3
       '@radix-ui/react-accordion':
         specifier: ^1.2.3
         version: 1.2.12(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.0.1(react@19.0.1))(react@19.0.1)
@@ -141,7 +144,7 @@ importers:
         version: 7.28.5
       '@medusajs/types':
         specifier: latest
-        version: 2.12.2(ioredis@5.8.2)(vite@5.4.21(@types/node@17.0.21))
+        version: 2.12.3(ioredis@5.8.2)(vite@5.4.21(@types/node@17.0.21))
       '@types/lodash':
         specifier: ^4.14.195
         version: 4.17.21
@@ -1535,6 +1538,10 @@ packages:
     resolution: {integrity: sha512-SDfjZv4wJKLLQ07LhdUWJce8KygJ6UhrCglO8altLTdyBZDT59naE7KN4pdd8FrdVvaWLzxKHfHo0crtXS32fQ==}
     engines: {node: '>=20'}
 
+  '@medusajs/js-sdk@2.12.3':
+    resolution: {integrity: sha512-8Tmmywg/VToTTwyhInSZMO0t0MuYgoak+e1o8xIXsH/Hp+7kkoXKRalib3/t9pnNC/L9s9vI9Slj+P1v9z0RxA==}
+    engines: {node: '>=20'}
+
   '@medusajs/link-modules@2.12.2':
     resolution: {integrity: sha512-wE+awEIRmSxPjBo3QqkD4z195AVEuqkm4cn4t9BjDjOExKuQZgYZYGuO3J5g1w/FyAu7DKciIfkmLagJwZ1p+w==}
     engines: {node: '>=20'}
@@ -1700,6 +1707,18 @@ packages:
 
   '@medusajs/types@2.12.2':
     resolution: {integrity: sha512-IJ7/a2GaDo8zbc/IKqT9bdL8TBFhdos3kUbO9CfQvL7iHmFdD6xNGZaWojdLrJTk8wCj7lWOpWL7mkJB+75m/g==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      ioredis: ^5.4.1
+      vite: ^5.4.21
+    peerDependenciesMeta:
+      ioredis:
+        optional: true
+      vite:
+        optional: true
+
+  '@medusajs/types@2.12.3':
+    resolution: {integrity: sha512-GkvgiDFP8XDugO8btcti34h4PmlSDwedU3uIWNg2HmxO56fqAUsGx+EUEndEGvtXERH75rNHhIofylxH2TW8tQ==}
     engines: {node: '>=20'}
     peerDependencies:
       ioredis: ^5.4.1
@@ -6838,6 +6857,7 @@ packages:
   next@15.3.6:
     resolution: {integrity: sha512-oI6D1zbbsh6JzzZFDCSHnnx6Qpvd1fSkVJu/5d8uluqnxzuoqtodVZjYvNovooznUq8udSAiKp7MbwlfZ8Gm6w==}
     engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
+    deprecated: This version has a security vulnerability. Please upgrade to a patched version. See https://nextjs.org/blog/security-update-2025-12-11 for more details.
     hasBin: true
     peerDependencies:
       '@opentelemetry/api': ^1.1.0
@@ -10510,6 +10530,11 @@ snapshots:
       fetch-event-stream: 0.1.6
       qs: 6.14.0
 
+  '@medusajs/js-sdk@2.12.3':
+    dependencies:
+      fetch-event-stream: 0.1.6
+      qs: 6.14.0
+
   '@medusajs/link-modules@2.12.2(@medusajs/framework@2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1)))':
     dependencies:
       '@medusajs/framework': 2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1))
@@ -10772,19 +10797,19 @@ snapshots:
     dependencies:
       '@medusajs/framework': 2.12.2(@aws-sdk/client-dynamodb@3.948.0)(@medusajs/cli@2.12.2(@types/node@20.19.26))(@types/node@20.19.26)(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1))
 
-  '@medusajs/types@2.12.2(ioredis@5.8.2)(vite@5.4.21(@types/node@17.0.21))':
-    dependencies:
-      bignumber.js: 9.3.1
-    optionalDependencies:
-      ioredis: 5.8.2
-      vite: 5.4.21(@types/node@17.0.21)
-
   '@medusajs/types@2.12.2(ioredis@5.8.2)(vite@5.4.21(@types/node@20.19.26)(terser@5.44.1))':
     dependencies:
       bignumber.js: 9.3.1
     optionalDependencies:
       ioredis: 5.8.2
       vite: 5.4.21(@types/node@20.19.26)(terser@5.44.1)
+
+  '@medusajs/types@2.12.3(ioredis@5.8.2)(vite@5.4.21(@types/node@17.0.21))':
+    dependencies:
+      bignumber.js: 9.3.1
+    optionalDependencies:
+      ioredis: 5.8.2
+      vite: 5.4.21(@types/node@17.0.21)
 
   '@medusajs/ui@4.0.30(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3)':
     dependencies:
