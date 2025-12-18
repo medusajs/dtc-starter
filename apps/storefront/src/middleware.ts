@@ -112,25 +112,49 @@ export async function middleware(request: NextRequest) {
 
   const regionMap = await getRegionMap(cacheId)
 
-  const countryCode = regionMap && (await getCountryCode(request, regionMap))
+  const countryCode = await getCountryCode(request, regionMap)
+
+  const redirectPath =
+    request.nextUrl.pathname === "/" ? "" : request.nextUrl.pathname
+
+  const queryString = request.nextUrl.search || ""
 
   const urlHasCountryCode =
     countryCode &&
     request.nextUrl.pathname.split("/")[1]?.toLowerCase() ===
       countryCode.toLowerCase()
 
+  const fallbackCountry = DEFAULT_REGION || "dk"
+
+  // If no regions exist, redirect to fallback country if not already there
+  if (!regionMap || regionMap.size === 0) {
+    const pathSegments = request.nextUrl.pathname.split("/").filter(Boolean)
+    const urlAlreadyHasFallback =
+      pathSegments[0]?.toLowerCase() === fallbackCountry.toLowerCase()
+
+    // if we already have the fallback country in the url, just continue
+    if (urlAlreadyHasFallback) {
+      return NextResponse.next()
+    }
+
+    // if we don't have the fallback country in the url, redirect to it
+    redirectUrl = `${request.nextUrl.origin}/${fallbackCountry}${redirectPath}${queryString}`
+    return NextResponse.redirect(redirectUrl, 307)
+  }
+
   // if one of the country codes is in the url and the cache id is set, return next
   if (urlHasCountryCode && cacheIdCookie) {
     return NextResponse.next()
   }
 
-  // if one of the country codes is in the url and the cache id is not set, set the cache id and redirect
+  // if one of the country codes is in the url and the cache id is not set, set the cache id and continue
   if (urlHasCountryCode && !cacheIdCookie) {
-    response.cookies.set("_medusa_cache_id", cacheId, {
+    const nextResponse = NextResponse.next()
+    nextResponse.cookies.set("_medusa_cache_id", cacheId, {
       maxAge: 60 * 60 * 24,
     })
 
-    return response
+    return nextResponse
   }
 
   // check if the url is a static asset
@@ -138,22 +162,31 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  const redirectPath =
-    request.nextUrl.pathname === "/" ? "" : request.nextUrl.pathname
-
-  const queryString = request.nextUrl.search ? request.nextUrl.search : ""
-
   // If no country code is set, we redirect to the relevant region.
   if (!urlHasCountryCode && countryCode) {
     redirectUrl = `${request.nextUrl.origin}/${countryCode}${redirectPath}${queryString}`
     response = NextResponse.redirect(`${redirectUrl}`, 307)
-  } else if (!urlHasCountryCode && !countryCode) {
-    const fallbackCountry = DEFAULT_REGION || "dk"
+    return response
+  }
+
+  // countryCode is undefined (e.g. regions are not seeded yet)
+  // if the url already starts with the fallback country, just continue
+  if (!urlHasCountryCode && !countryCode) {
+    const pathSegments = request.nextUrl.pathname.split("/").filter(Boolean)
+
+    if (pathSegments[0]?.toLowerCase() === fallbackCountry.toLowerCase()) {
+      const nextResponse = NextResponse.next()
+      if (!cacheIdCookie) {
+        nextResponse.cookies.set("_medusa_cache_id", cacheId, {
+          maxAge: 60 * 60 * 24,
+        })
+      }
+      return nextResponse
+    }
+
     redirectUrl = `${request.nextUrl.origin}/${fallbackCountry}${redirectPath}${queryString}`
     response = NextResponse.redirect(`${redirectUrl}`, 307)
-    response.cookies.set("_medusa_cache_id", cacheId, {
-      maxAge: 60 * 60 * 24,
-    })
+    return response
   }
 
   return response
