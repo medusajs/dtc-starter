@@ -102,94 +102,39 @@ async function getCountryCode(
  * Middleware to handle region selection and onboarding status.
  */
 export async function middleware(request: NextRequest) {
-  let redirectUrl = request.nextUrl.href
-
-  let response = NextResponse.redirect(redirectUrl, 307)
-
-  let cacheIdCookie = request.cookies.get("_medusa_cache_id")
-
-  let cacheId = cacheIdCookie?.value || crypto.randomUUID()
-
-  const regionMap = await getRegionMap(cacheId)
-
-  const countryCode = await getCountryCode(request, regionMap)
-
-  const redirectPath =
-    request.nextUrl.pathname === "/" ? "" : request.nextUrl.pathname
-
-  const queryString = request.nextUrl.search || ""
-
-  const urlHasCountryCode =
-    countryCode &&
-    request.nextUrl.pathname.split("/")[1]?.toLowerCase() ===
-      countryCode.toLowerCase()
-
-  const fallbackCountry = DEFAULT_REGION || "dk"
-
-  // If no regions exist, redirect to fallback country if not already there
-  if (!regionMap || regionMap.size === 0) {
-    const pathSegments = request.nextUrl.pathname.split("/").filter(Boolean)
-    const urlAlreadyHasFallback =
-      pathSegments[0]?.toLowerCase() === fallbackCountry.toLowerCase()
-
-    // if we already have the fallback country in the url, just continue
-    if (urlAlreadyHasFallback) {
-      return NextResponse.next()
-    }
-
-    // if we don't have the fallback country in the url, redirect to it
-    redirectUrl = `${request.nextUrl.origin}/${fallbackCountry}${redirectPath}${queryString}`
-    return NextResponse.redirect(redirectUrl, 307)
-  }
-
-  // if one of the country codes is in the url and the cache id is set, return next
-  if (urlHasCountryCode && cacheIdCookie) {
-    return NextResponse.next()
-  }
-
-  // if one of the country codes is in the url and the cache id is not set, set the cache id and continue
-  if (urlHasCountryCode && !cacheIdCookie) {
-    const nextResponse = NextResponse.next()
-    nextResponse.cookies.set("_medusa_cache_id", cacheId, {
-      maxAge: 60 * 60 * 24,
-    })
-
-    return nextResponse
-  }
-
-  // check if the url is a static asset
   if (request.nextUrl.pathname.includes(".")) {
     return NextResponse.next()
   }
 
-  // If no country code is set, we redirect to the relevant region.
-  if (!urlHasCountryCode && countryCode) {
-    redirectUrl = `${request.nextUrl.origin}/${countryCode}${redirectPath}${queryString}`
-    response = NextResponse.redirect(`${redirectUrl}`, 307)
-    return response
-  }
+  const cacheIdCookie = request.cookies.get("_medusa_cache_id")
+  const cacheId = cacheIdCookie?.value || crypto.randomUUID()
 
-  // countryCode is undefined (e.g. regions are not seeded yet)
-  // if the url already starts with the fallback country, just continue
-  if (!urlHasCountryCode && !countryCode) {
-    const pathSegments = request.nextUrl.pathname.split("/").filter(Boolean)
+  const regionMap = await getRegionMap(cacheId)
+  const countryCode = await getCountryCode(request, regionMap)
 
-    if (pathSegments[0]?.toLowerCase() === fallbackCountry.toLowerCase()) {
-      const nextResponse = NextResponse.next()
-      if (!cacheIdCookie) {
-        nextResponse.cookies.set("_medusa_cache_id", cacheId, {
-          maxAge: 60 * 60 * 24,
-        })
-      }
-      return nextResponse
+  // if the country code is available, use it, otherwise use the default region
+  const country = countryCode || DEFAULT_REGION
+  const firstPathSegment = request.nextUrl.pathname.split("/")[1]?.toLowerCase()
+  const urlHasCountry = firstPathSegment === country.toLowerCase()
+
+  if (urlHasCountry) {
+    if (!cacheIdCookie) {
+      const response = NextResponse.next()
+      response.cookies.set("_medusa_cache_id", cacheId, {
+        maxAge: 60 * 60 * 24,
+      })
+      return response
     }
-
-    redirectUrl = `${request.nextUrl.origin}/${fallbackCountry}${redirectPath}${queryString}`
-    response = NextResponse.redirect(`${redirectUrl}`, 307)
-    return response
+    return NextResponse.next()
   }
 
-  return response
+  // if the url doesn't have the country, redirect to it
+  const redirectPath =
+    request.nextUrl.pathname === "/" ? "" : request.nextUrl.pathname
+  const queryString = request.nextUrl.search || ""
+  const redirectUrl = `${request.nextUrl.origin}/${country}${redirectPath}${queryString}`
+
+  return NextResponse.redirect(redirectUrl, 307)
 }
 
 export const config = {
