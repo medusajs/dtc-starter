@@ -1,11 +1,13 @@
-import { CreateInventoryLevelInput, ExecArgs } from "@medusajs/framework/types";
+import { MedusaContainer } from "@medusajs/framework";
 import {
   ContainerRegistrationKeys,
+  ModuleRegistrationName,
   Modules,
   ProductStatus,
 } from "@medusajs/framework/utils";
 import {
   createApiKeysWorkflow,
+  createCollectionsWorkflow,
   createInventoryLevelsWorkflow,
   createProductCategoriesWorkflow,
   createProductsWorkflow,
@@ -14,101 +16,84 @@ import {
   createShippingOptionsWorkflow,
   createShippingProfilesWorkflow,
   createStockLocationsWorkflow,
+  createStoresWorkflow,
   createTaxRegionsWorkflow,
   linkSalesChannelsToApiKeyWorkflow,
   linkSalesChannelsToStockLocationWorkflow,
-  updateStoresStep,
-  updateStoresWorkflow,
 } from "@medusajs/medusa/core-flows";
-import {
-  createWorkflow,
-  transform,
-  WorkflowResponse,
-} from "@medusajs/framework/workflows-sdk";
 
-const updateStoreCurrencies = createWorkflow(
-  "update-store-currencies",
-  (input: {
-    supported_currencies: { currency_code: string; is_default?: boolean }[];
-    store_id: string;
-  }) => {
-    const normalizedInput = transform({ input }, (data) => {
-      return {
-        selector: { id: data.input.store_id },
-        update: {
-          supported_currencies: data.input.supported_currencies.map(
-            (currency) => {
-              return {
-                currency_code: currency.currency_code,
-                is_default: currency.is_default ?? false,
-              };
-            }
-          ),
-        },
-      };
-    });
-
-    const stores = updateStoresStep(normalizedInput);
-
-    return new WorkflowResponse(stores);
-  }
-);
-
-export default async function seedDemoData({ container }: ExecArgs) {
+export default async function initial_data_seed({
+  container,
+}: {
+  container: MedusaContainer;
+}) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER);
   const link = container.resolve(ContainerRegistrationKeys.LINK);
   const query = container.resolve(ContainerRegistrationKeys.QUERY);
-  const fulfillmentModuleService = container.resolve(Modules.FULFILLMENT);
-  const salesChannelModuleService = container.resolve(Modules.SALES_CHANNEL);
-  const storeModuleService = container.resolve(Modules.STORE);
+  const fulfillmentModuleService = container.resolve(
+    ModuleRegistrationName.FULFILLMENT
+  );
 
   const countries = ["gb", "de", "dk", "se", "fr", "es", "it"];
 
   logger.info("Seeding store data...");
-  const [store] = await storeModuleService.listStores();
-  let defaultSalesChannel = await salesChannelModuleService.listSalesChannels({
-    name: "Default Sales Channel",
-  });
-
-  if (!defaultSalesChannel.length) {
-    // create the default sales channel
-    const { result: salesChannelResult } = await createSalesChannelsWorkflow(
-      container
-    ).run({
-      input: {
-        salesChannelsData: [
-          {
-            name: "Default Sales Channel",
-          },
-        ],
-      },
-    });
-    defaultSalesChannel = salesChannelResult;
-  }
-
-  await updateStoreCurrencies(container).run({
+  const {
+    result: [defaultSalesChannel],
+  } = await createSalesChannelsWorkflow(container).run({
     input: {
-      store_id: store.id,
-      supported_currencies: [
+      salesChannelsData: [
         {
-          currency_code: "eur",
-          is_default: true,
-        },
-        {
-          currency_code: "usd",
+          name: "Default Sales Channel",
+          description: "Created by Medusa",
         },
       ],
     },
   });
 
-  await updateStoresWorkflow(container).run({
+  const {
+    result: [publishableApiKey],
+  } = await createApiKeysWorkflow(container).run({
     input: {
-      selector: { id: store.id },
-      update: {
-        default_sales_channel_id: defaultSalesChannel[0].id,
-      },
+      api_keys: [
+        {
+          title: "Default Publishable API Key",
+          type: "publishable",
+          created_by: "",
+        },
+      ],
     },
   });
+
+  await linkSalesChannelsToApiKeyWorkflow(container).run({
+    input: {
+      id: publishableApiKey.id,
+      add: [defaultSalesChannel.id],
+    },
+  });
+
+  const {
+    result: [store],
+  } = await createStoresWorkflow(container).run({
+    input: {
+      stores: [
+        {
+          name: "Default Store",
+          supported_currencies: [
+            {
+              currency_code: "eur",
+              is_default: true,
+            },
+            {
+              currency_code: "usd",
+              is_default: false,
+            },
+          ],
+          default_sales_channel_id: defaultSalesChannel.id,
+        },
+      ],
+    },
+  });
+
   logger.info("Seeding region data...");
   const { result: regionResult } = await createRegionsWorkflow(container).run({
     input: {
@@ -153,15 +138,6 @@ export default async function seedDemoData({ container }: ExecArgs) {
   });
   const stockLocation = stockLocationResult[0];
 
-  await updateStoresWorkflow(container).run({
-    input: {
-      selector: { id: store.id },
-      update: {
-        default_location_id: stockLocation.id,
-      },
-    },
-  });
-
   await link.create({
     [Modules.STOCK_LOCATION]: {
       stock_location_id: stockLocation.id,
@@ -172,25 +148,12 @@ export default async function seedDemoData({ container }: ExecArgs) {
   });
 
   logger.info("Seeding fulfillment data...");
-  const shippingProfiles = await fulfillmentModuleService.listShippingProfiles({
-    type: "default",
+  // This is created by a migration script in core.
+  const { data: shippingProfileResult } = await query.graph({
+    entity: "shipping_profile",
+    fields: ["id"],
   });
-  let shippingProfile = shippingProfiles.length ? shippingProfiles[0] : null;
-
-  if (!shippingProfile) {
-    const { result: shippingProfileResult } =
-      await createShippingProfilesWorkflow(container).run({
-        input: {
-          data: [
-            {
-              name: "Default Shipping Profile",
-              type: "default",
-            },
-          ],
-        },
-      });
-    shippingProfile = shippingProfileResult[0];
-  }
+  const shippingProfile = shippingProfileResult[0];
 
   const fulfillmentSet = await fulfillmentModuleService.createFulfillmentSets({
     name: "European Warehouse delivery",
@@ -271,7 +234,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
         rules: [
           {
             attribute: "enabled_in_store",
-            value: "true",
+            value: '"true"',
             operator: "eq",
           },
           {
@@ -309,7 +272,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
         rules: [
           {
             attribute: "enabled_in_store",
-            value: "true",
+            value: '"true"',
             operator: "eq",
           },
           {
@@ -326,34 +289,10 @@ export default async function seedDemoData({ container }: ExecArgs) {
   await linkSalesChannelsToStockLocationWorkflow(container).run({
     input: {
       id: stockLocation.id,
-      add: [defaultSalesChannel[0].id],
+      add: [defaultSalesChannel.id],
     },
   });
   logger.info("Finished seeding stock location data.");
-
-  logger.info("Seeding publishable API key data...");
-  const { result: publishableApiKeyResult } = await createApiKeysWorkflow(
-    container
-  ).run({
-    input: {
-      api_keys: [
-        {
-          title: "Webshop",
-          type: "publishable",
-          created_by: "",
-        },
-      ],
-    },
-  });
-  const publishableApiKey = publishableApiKeyResult[0];
-
-  await linkSalesChannelsToApiKeyWorkflow(container).run({
-    input: {
-      id: publishableApiKey.id,
-      add: [defaultSalesChannel[0].id],
-    },
-  });
-  logger.info("Finished seeding publishable API key data.");
 
   logger.info("Seeding product data...");
 
@@ -568,7 +507,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
           ],
           sales_channels: [
             {
-              id: defaultSalesChannel[0].id,
+              id: defaultSalesChannel.id,
             },
           ],
         },
@@ -669,7 +608,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
           ],
           sales_channels: [
             {
-              id: defaultSalesChannel[0].id,
+              id: defaultSalesChannel.id,
             },
           ],
         },
@@ -770,7 +709,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
           ],
           sales_channels: [
             {
-              id: defaultSalesChannel[0].id,
+              id: defaultSalesChannel.id,
             },
           ],
         },
@@ -871,7 +810,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
           ],
           sales_channels: [
             {
-              id: defaultSalesChannel[0].id,
+              id: defaultSalesChannel.id,
             },
           ],
         },
@@ -887,19 +826,13 @@ export default async function seedDemoData({ container }: ExecArgs) {
     fields: ["id"],
   });
 
-  const inventoryLevels: CreateInventoryLevelInput[] = [];
-  for (const inventoryItem of inventoryItems) {
-    const inventoryLevel = {
-      location_id: stockLocation.id,
-      stocked_quantity: 1000000,
-      inventory_item_id: inventoryItem.id,
-    };
-    inventoryLevels.push(inventoryLevel);
-  }
-
   await createInventoryLevelsWorkflow(container).run({
     input: {
-      inventory_levels: inventoryLevels,
+      inventory_levels: inventoryItems.map((item) => ({
+        location_id: stockLocation.id,
+        stocked_quantity: 1000000,
+        inventory_item_id: item.id,
+      })),
     },
   });
 
