@@ -15,7 +15,7 @@ const OnboardingCta = ({ orderId }: { orderId: string }) => {
         </Text>
         <Button
           className="w-fit"
-          size="xlarge"
+          size="large"
           onClick={() => resetOnboardingState(orderId)}
         >
           Complete setup in admin

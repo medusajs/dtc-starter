@@ -2,7 +2,18 @@ import { HttpTypes } from "@medusajs/types"
 import { getPercentageDiff } from "./get-percentage-diff"
 import { convertToLocale } from "./money"
 
-export const getPricesForVariant = (variant: any) => {
+type VariantWithPrice = HttpTypes.StoreProductVariant & {
+  calculated_price?: {
+    calculated_amount: number
+    original_amount: number
+    currency_code: string
+    calculated_price: {
+      price_list_type: string
+    }
+  }
+}
+
+export const getPricesForVariant = (variant: VariantWithPrice) => {
   if (!variant?.calculated_price?.calculated_amount) {
     return null
   }
@@ -43,12 +54,12 @@ export function getProductPrice({
       return null
     }
 
-    const cheapestVariant: any = product.variants
-      .filter((v: any) => !!v.calculated_price)
-      .sort((a: any, b: any) => {
+    const cheapestVariant = (product.variants as VariantWithPrice[])
+      .filter((v) => !!v.calculated_price)
+      .sort((a, b) => {
         return (
-          a.calculated_price.calculated_amount -
-          b.calculated_price.calculated_amount
+          (a.calculated_price?.calculated_amount ?? 0) -
+          (b.calculated_price?.calculated_amount ?? 0)
         )
       })[0]
 
@@ -60,9 +71,9 @@ export function getProductPrice({
       return null
     }
 
-    const variant: any = product.variants?.find(
+    const variant = product.variants?.find(
       (v) => v.id === variantId || v.sku === variantId
-    )
+    ) as VariantWithPrice | undefined
 
     if (!variant) {
       return null

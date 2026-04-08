@@ -7,11 +7,13 @@ import { useFormStatus } from "react-dom"
 export function SubmitButton({
   children,
   variant = "primary",
+  size = "medium",
   className,
   "data-testid": dataTestId,
 }: {
   children: React.ReactNode
-  variant?: "primary" | "secondary" | "transparent" | "danger" | null
+  variant?: "primary" | "secondary" | "transparent" | null
+  size?: "small" | "medium" | "large"
   className?: string
   "data-testid"?: string
 }) {
@@ -19,7 +21,7 @@ export function SubmitButton({
 
   return (
     <Button
-      size="large"
+      size={size}
       className={className}
       type="submit"
       isLoading={pending}

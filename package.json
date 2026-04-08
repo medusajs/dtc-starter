@@ -15,6 +15,12 @@
     "backend:dev": "turbo dev --filter=@dtc/backend",
     "storefront:dev": "turbo dev --filter=@dtc/storefront"
   },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "^19.0.0",
+      "@types/react-dom": "^19.0.0"
+    }
+  },
   "devDependencies": {
     "turbo": "^2.0.14",
     "prettier": "^3.2.5"

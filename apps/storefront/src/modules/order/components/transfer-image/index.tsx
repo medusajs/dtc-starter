@@ -1,6 +1,6 @@
 import { SVGProps } from "react"
 
-const TransferImage = (props: SVGProps<SVGSVGElement>) => (
+const TransferImage = (_props: SVGProps<SVGSVGElement>) => (
   <svg
     width="280"
     height="181"

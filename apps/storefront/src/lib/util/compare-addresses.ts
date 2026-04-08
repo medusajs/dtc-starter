@@ -1,6 +1,6 @@
 import { isEqual, pick } from "lodash"
 
-export default function compareAddresses(address1: any, address2: any) {
+export default function compareAddresses(address1: object, address2: object) {
   return isEqual(
     pick(address1, [
       "first_name",

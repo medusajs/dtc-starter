@@ -13,7 +13,7 @@ type Props = {
 }
 
 const Register = ({ setCurrentView }: Props) => {
-  const [message, formAction] = useActionState(signup, null)
+  const [message, formAction] = useActionState(signup as (state: string | null, formData: FormData) => Promise<string | null>, null as string | null)
 
   return (
     <div

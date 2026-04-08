@@ -6,8 +6,7 @@ import PlaceholderImage from "@modules/common/icons/placeholder-image"
 
 type ThumbnailProps = {
   thumbnail?: string | null
-  // TODO: Fix image typings
-  images?: any[] | null
+  images?: { url?: string }[] | null
   size?: "small" | "medium" | "large" | "full" | "square"
   isFeatured?: boolean
   className?: string

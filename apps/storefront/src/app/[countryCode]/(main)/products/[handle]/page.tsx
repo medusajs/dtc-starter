@@ -61,12 +61,12 @@ function getImagesForVariant(
   }
 
   const variant = product.variants!.find((v) => v.id === selectedVariantId)
-  if (!variant || !variant.images.length) {
+  if (!variant || !variant.images?.length) {
     return product.images
   }
 
-  const imageIdsMap = new Map(variant.images.map((i) => [i.id, true]))
-  return product.images!.filter((i) => imageIdsMap.has(i.id))
+  const imageIdsMap = new Map(variant.images!.map((i) => [i.id, true]))
+  return product.images?.filter((i) => imageIdsMap.has(i.id)) ?? null
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
@@ -125,7 +125,7 @@ export default async function ProductPage(props: Props) {
       product={pricedProduct}
       region={region}
       countryCode={params.countryCode}
-      images={images}
+      images={images ?? []}
     />
   )
 }

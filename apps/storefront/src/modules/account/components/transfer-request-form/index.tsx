@@ -26,13 +26,13 @@ export default function TransferRequestForm() {
     <div className="flex flex-col gap-y-4 w-full">
       <div className="grid sm:grid-cols-2 items-center gap-x-8 gap-y-4 w-full">
         <div className="flex flex-col gap-y-1">
-          <Heading level="h3" className="text-lg text-neutral-950">
+          <Heading level="h3" className="!text-sm font-semibold text-neutral-950">
             Order transfers
           </Heading>
-          <Text className="text-base-regular text-neutral-500">
+          <p className="text-small-regular text-neutral-500">
             Can&apos;t find the order you are looking for?
             <br /> Connect an order to your account.
-          </Text>
+          </p>
         </div>
         <form
           action={formAction}
@@ -42,6 +42,7 @@ export default function TransferRequestForm() {
             <Input className="w-full" name="order_id" placeholder="Order ID" />
             <SubmitButton
               variant="secondary"
+              size="small"
               className="w-fit whitespace-nowrap self-end"
             >
               Request transfer
@@ -68,7 +69,6 @@ export default function TransferRequestForm() {
             </div>
           </div>
           <IconButton
-            variant="transparent"
             className="h-fit"
             onClick={() => setShowSuccess(false)}
           >

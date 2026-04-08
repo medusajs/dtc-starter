@@ -20,8 +20,7 @@ const Hero = () => {
         </span>
         <a href="https://github.com/medusajs/dtc-starter" target="_blank">
           <Button variant="secondary">
-            View on GitHub
-            <Github />
+            View on GitHub <Github />
           </Button>
         </a>
       </div>

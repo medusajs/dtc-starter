@@ -72,7 +72,7 @@ export default async function CollectionPage(props: Props) {
   const { sortBy, page } = searchParams
 
   const collection = await getCollectionByHandle(params.handle).then(
-    (collection: StoreCollection) => collection
+    (collection) => collection
   )
 
   if (!collection) {

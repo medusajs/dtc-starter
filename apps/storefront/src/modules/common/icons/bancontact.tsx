@@ -3,7 +3,7 @@ import React from "react"
 import { IconProps } from "types/icon"
 
 const Ideal: React.FC<IconProps> = ({
-  size = "20",
+  size: _size = "20",
   color = "currentColor",
   ...attributes
 }) => {

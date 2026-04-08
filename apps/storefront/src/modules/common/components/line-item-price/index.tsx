@@ -15,8 +15,8 @@ const LineItemPrice = ({
   currencyCode,
 }: LineItemPriceProps) => {
   const { total, original_total } = item
-  const originalPrice = original_total
-  const currentPrice = total
+  const originalPrice = original_total ?? 0
+  const currentPrice = total ?? 0
   const hasReducedPrice = currentPrice < originalPrice
 
   return (

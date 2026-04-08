@@ -18,7 +18,7 @@ const ShippingAddress = ({
   checked: boolean
   onChange: () => void
 }) => {
-  const [formData, setFormData] = useState<Record<string, any>>({
+  const [formData, setFormData] = useState<Record<string, string>>({
     "shipping_address.first_name": cart?.shipping_address?.first_name || "",
     "shipping_address.last_name": cart?.shipping_address?.last_name || "",
     "shipping_address.address_1": cart?.shipping_address?.address_1 || "",
@@ -49,8 +49,8 @@ const ShippingAddress = ({
     address?: HttpTypes.StoreCartAddress,
     email?: string
   ) => {
-    address &&
-      setFormData((prevState: Record<string, any>) => ({
+    if (address) {
+      setFormData((prevState: Record<string, string>) => ({
         ...prevState,
         "shipping_address.first_name": address?.first_name || "",
         "shipping_address.last_name": address?.last_name || "",
@@ -62,12 +62,14 @@ const ShippingAddress = ({
         "shipping_address.province": address?.province || "",
         "shipping_address.phone": address?.phone || "",
       }))
+    }
 
-    email &&
-      setFormData((prevState: Record<string, any>) => ({
+    if (email) {
+      setFormData((prevState: Record<string, string>) => ({
         ...prevState,
         email: email,
       }))
+    }
   }
 
   useEffect(() => {
@@ -104,7 +106,7 @@ const ShippingAddress = ({
             addressInput={
               mapKeys(formData, (_, key) =>
                 key.replace("shipping_address.", "")
-              ) as HttpTypes.StoreCartAddress
+              ) as unknown as HttpTypes.StoreCartAddress
             }
             onSelect={setFormAddress}
           />

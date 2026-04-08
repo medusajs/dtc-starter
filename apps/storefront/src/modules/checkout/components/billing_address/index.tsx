@@ -4,7 +4,7 @@ import React, { useState } from "react"
 import CountrySelect from "../country-select"
 
 const BillingAddress = ({ cart }: { cart: HttpTypes.StoreCart | null }) => {
-  const [formData, setFormData] = useState<any>({
+  const [formData, setFormData] = useState<Record<string, string>>({
     "billing_address.first_name": cart?.billing_address?.first_name || "",
     "billing_address.last_name": cart?.billing_address?.last_name || "",
     "billing_address.address_1": cart?.billing_address?.address_1 || "",

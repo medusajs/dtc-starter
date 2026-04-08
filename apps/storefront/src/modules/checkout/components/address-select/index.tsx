@@ -29,7 +29,7 @@ const AddressSelect = ({
   }
 
   const selectedAddress = useMemo(() => {
-    return addresses.find((a) => compareAddresses(a, addressInput))
+    return addresses.find((a) => addressInput && compareAddresses(a, addressInput))
   }, [addresses, addressInput])
 
   return (

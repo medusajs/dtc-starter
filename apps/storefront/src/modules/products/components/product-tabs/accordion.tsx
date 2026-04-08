@@ -37,10 +37,10 @@ const Item: React.FC<AccordionItemProps> = ({
   description,
   children,
   className,
-  headingSize = "large",
+  headingSize: _headingSize = "large",
   customTrigger = undefined,
   forceMountContent = undefined,
-  triggerable,
+  triggerable: _triggerable,
   ...props
 }) => {
   return (
@@ -63,7 +63,7 @@ const Item: React.FC<AccordionItemProps> = ({
             </AccordionPrimitive.Trigger>
           </div>
           {subtitle && (
-            <Text as="span" size="small" className="mt-1">
+            <Text as="span" className="mt-1 text-sm">
               {subtitle}
             </Text>
           )}

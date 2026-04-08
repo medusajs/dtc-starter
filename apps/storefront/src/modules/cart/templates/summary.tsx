@@ -9,9 +9,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import { HttpTypes } from "@medusajs/types"
 
 type SummaryProps = {
-  cart: HttpTypes.StoreCart & {
-    promotions: HttpTypes.StorePromotion[]
-  }
+  cart: HttpTypes.StoreCart
 }
 
 function getCheckoutStep(cart: HttpTypes.StoreCart) {

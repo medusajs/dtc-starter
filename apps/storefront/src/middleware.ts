@@ -75,8 +75,7 @@ async function getCountryCode(
   const urlCountryCode = request.nextUrl.pathname.split("/")[1]?.toLowerCase()
 
   // Cloudflare Workers provides country via request.cf.country
-  // @ts-ignore - cf property exists on Cloudflare Workers but not in NextRequest types
-  const cloudflareCountryCode = (request as any).cf?.country?.toLowerCase()
+  const cloudflareCountryCode = (request as { cf?: { country?: string } }).cf?.country?.toLowerCase()
 
   // Vercel provides x-vercel-ip-country header
   const vercelCountryCode = request.headers
