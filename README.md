@@ -58,7 +58,7 @@ A production-ready monorepo starter for direct-to-consumer ecommerce stores powe
 
 The fastest way to get started is deploying with [Medusa Cloud](https://cloud.medusajs.com):
 
-1. [Create a Medusa Cloud account](https://console.medusa-commerce.com/)
+1. [Create a Medusa Cloud account](https://cloud.medusajs.com)
 2. Deploy this starter directly from your dashboard
 
 ### Local Installation
@@ -66,6 +66,7 @@ The fastest way to get started is deploying with [Medusa Cloud](https://cloud.me
 > **Prerequisites:
 >
 > - [Node.js](https://nodejs.org/) v20+
+> - [PostgreSQL](https://www.postgresql.org/) v15+
 > - [pnpm](https://pnpm.io/) v10+
 
 1. Clone the repository and install dependencies:
