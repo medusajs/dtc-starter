@@ -2,8 +2,6 @@
 name: Update Medusa
 
 on:
-  schedule:
-    - cron: "0 9 * * *" 
   workflow_dispatch: # Allow manual runs
 
 jobs:
