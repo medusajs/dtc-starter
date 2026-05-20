@@ -5,12 +5,13 @@ import CheckoutForm from "@modules/checkout/templates/checkout-form"
 import CheckoutSummary from "@modules/checkout/templates/checkout-summary"
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
+import { Suspense } from "react"
 
 export const metadata: Metadata = {
   title: "Checkout",
 }
 
-export default async function Checkout() {
+async function CheckoutContent() {
   const cart = await retrieveCart()
 
   if (!cart) {
@@ -26,5 +27,13 @@ export default async function Checkout() {
       </PaymentWrapper>
       <CheckoutSummary cart={cart} />
     </div>
+  )
+}
+
+export default function Checkout() {
+  return (
+    <Suspense fallback={<div className="min-h-[60vh]" />}>
+      <CheckoutContent />
+    </Suspense>
   )
 }

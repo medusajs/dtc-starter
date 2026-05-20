@@ -70,16 +70,10 @@ function getImagesForVariant(
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
-  const params = await props.params
-  const { handle } = params
-  const region = await getRegion(params.countryCode)
-
-  if (!region) {
-    notFound()
-  }
+  const { countryCode, handle } = await props.params
 
   const product = await listProducts({
-    countryCode: params.countryCode,
+    countryCode: countryCode,
     queryParams: { handle },
   }).then(({ response }) => response.products[0])
 
@@ -99,32 +93,31 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 }
 
 export default async function ProductPage(props: Props) {
-  const params = await props.params
-  const region = await getRegion(params.countryCode)
-  const searchParams = await props.searchParams
+  const { countryCode, handle } = await props.params
+  const { v_id: selectedVariantId } = await props.searchParams
 
-  const selectedVariantId = searchParams.v_id
+  const region = await getRegion(countryCode)
 
   if (!region) {
     notFound()
   }
 
   const pricedProduct = await listProducts({
-    countryCode: params.countryCode,
-    queryParams: { handle: params.handle },
+    countryCode: countryCode,
+    queryParams: { handle },
   }).then(({ response }) => response.products[0])
-
-  const images = getImagesForVariant(pricedProduct, selectedVariantId)
 
   if (!pricedProduct) {
     notFound()
   }
 
+  const images = getImagesForVariant(pricedProduct, selectedVariantId)
+
   return (
     <ProductTemplate
       product={pricedProduct}
       region={region}
-      countryCode={params.countryCode}
+      countryCode={countryCode}
       images={images ?? []}
     />
   )

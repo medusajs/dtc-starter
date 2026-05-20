@@ -64,7 +64,7 @@ async function getRegionMap(cacheId: string) {
 /**
  * Fetches regions from Medusa and sets the region cookie.
  * @param request
- * @param response
+ * @param regionMap
  */
 async function getCountryCode(
   request: NextRequest,
@@ -100,7 +100,7 @@ async function getCountryCode(
 /**
  * Middleware to handle region selection and onboarding status.
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   if (request.nextUrl.pathname.includes(".")) {
     return NextResponse.next()
   }

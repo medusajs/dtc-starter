@@ -8,7 +8,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
 
-export default async function Nav() {
+async function NavContent() {
   const [regions, locales, currentLocale] = await Promise.all([
     listRegions().then((regions: StoreRegion[]) => regions),
     listLocales(),
@@ -62,5 +62,17 @@ export default async function Nav() {
         </nav>
       </header>
     </div>
+  )
+}
+
+export default function Nav() {
+  return (
+    <Suspense fallback={
+      <div className="sticky top-0 inset-x-0 z-50 group">
+        <header className="relative h-16 mx-auto border-b duration-200 bg-white border-ui-border-base" />
+      </div>
+    }>
+      <NavContent />
+    </Suspense>
   )
 }

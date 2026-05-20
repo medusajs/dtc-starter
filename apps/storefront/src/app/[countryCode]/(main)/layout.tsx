@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-
+import { Suspense, type ReactNode } from "react"
 import { listCartOptions, retrieveCart } from "@lib/data/cart"
 import { retrieveCustomer } from "@lib/data/customer"
 import { getBaseURL } from "@lib/util/env"
@@ -13,31 +13,43 @@ export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
 }
 
-export default async function PageLayout(props: { children: React.ReactNode }) {
+async function CustomerBanner() {
   const customer = await retrieveCustomer()
   const cart = await retrieveCart()
+
+  if (!customer || !cart) return null
+
+  return <CartMismatchBanner customer={customer} cart={cart} />
+}
+
+async function ShippingNudge() {
+  const cart = await retrieveCart()
+
+  if (!cart) return null
+
   let shippingOptions: StoreCartShippingOption[] = []
+  const { shipping_options } = await listCartOptions()
+  shippingOptions = shipping_options
 
-  if (cart) {
-    const { shipping_options } = await listCartOptions()
+  return (
+    <FreeShippingPriceNudge
+      variant="popup"
+      cart={cart}
+      shippingOptions={shippingOptions}
+    />
+  )
+}
 
-    shippingOptions = shipping_options
-  }
-
+export default function PageLayout(props: { children: ReactNode }) {
   return (
     <>
       <Nav />
-      {customer && cart && (
-        <CartMismatchBanner customer={customer} cart={cart} />
-      )}
-
-      {cart && (
-        <FreeShippingPriceNudge
-          variant="popup"
-          cart={cart}
-          shippingOptions={shippingOptions}
-        />
-      )}
+      <Suspense>
+        <CustomerBanner />
+      </Suspense>
+      <Suspense>
+        <ShippingNudge />
+      </Suspense>
       {props.children}
       <Footer />
     </>

@@ -1,13 +1,14 @@
+import { Suspense, type ReactNode } from "react"
 import { retrieveCustomer } from "@lib/data/customer"
 // TODO: Re-add Toaster component when needed
 import AccountLayout from "@modules/account/templates/account-layout"
 
-export default async function AccountPageLayout({
+async function AccountContent({
   dashboard,
   login,
 }: {
-  dashboard?: React.ReactNode
-  login?: React.ReactNode
+  dashboard?: ReactNode
+  login?: ReactNode
 }) {
   const customer = await retrieveCustomer().catch(() => null)
 
@@ -16,5 +17,19 @@ export default async function AccountPageLayout({
       {customer ? dashboard : login}
       {/* TODO: Re-add Toaster component when needed */}
     </AccountLayout>
+  )
+}
+
+export default function AccountPageLayout({
+  dashboard,
+  login,
+}: {
+  dashboard?: ReactNode
+  login?: ReactNode
+}) {
+  return (
+    <Suspense fallback={<div className="min-h-[60vh]" />}>
+      <AccountContent dashboard={dashboard} login={login} />
+    </Suspense>
   )
 }

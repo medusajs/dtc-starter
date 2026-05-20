@@ -1,14 +1,12 @@
 import { declineTransferRequest } from "@lib/data/orders"
 import { Heading, Text } from "@modules/common/components/ui"
 import TransferImage from "@modules/order/components/transfer-image"
+import { Suspense } from "react"
 
-export default async function TransferPage({
-  params,
-}: {
-  params: { id: string; token: string }
-}) {
-  const { id, token } = params
+type Params = Promise<{ id: string; token: string }>
 
+async function TransferContent({ params }: { params: Params }) {
+  const { id, token } = await params
   const { success, error } = await declineTransferRequest(id, token)
 
   return (
@@ -37,5 +35,17 @@ export default async function TransferPage({
         )}
       </div>
     </div>
+  )
+}
+
+export default function TransferPage({
+  params,
+}: {
+  params: Params
+}) {
+  return (
+    <Suspense fallback={<div className="min-h-[60vh]" />}>
+      <TransferContent params={params} />
+    </Suspense>
   )
 }
