@@ -1,15 +1,15 @@
-import { listCategories } from "@lib/data/categories";
-import { listCollections } from "@lib/data/collections";
-import { Text, clx } from "@modules/common/components/ui";
+import { Suspense } from "react"
+import { listCategories } from "@lib/data/categories"
+import { listCollections } from "@lib/data/collections"
+import { Text, clx } from "@modules/common/components/ui"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import MedusaCTA from "@modules/layout/components/medusa-cta"
 
-import LocalizedClientLink from "@modules/common/components/localized-client-link";
-import MedusaCTA from "@modules/layout/components/medusa-cta";
-
-export default async function Footer() {
+async function FooterContent() {
   const { collections } = await listCollections({
     fields: "*products",
-  });
-  const productCategories = await listCategories();
+  })
+  const productCategories = await listCategories()
 
   return (
     <footer className="border-t border-ui-border-base w-full">
@@ -35,7 +35,7 @@ export default async function Footer() {
                 >
                   {productCategories?.slice(0, 6).map((c) => {
                     if (c.parent_category) {
-                      return;
+                      return
                     }
 
                     const children =
@@ -43,7 +43,7 @@ export default async function Footer() {
                         name: child.name,
                         handle: child.handle,
                         id: child.id,
-                      })) || null;
+                      })) || null
 
                     return (
                       <li
@@ -77,7 +77,7 @@ export default async function Footer() {
                           </ul>
                         )}
                       </li>
-                    );
+                    )
                   })}
                 </ul>
               </div>
@@ -153,5 +153,29 @@ export default async function Footer() {
         </div>
       </div>
     </footer>
-  );
+  )
+}
+
+export default function Footer() {
+  return (
+    <Suspense
+      fallback={
+        <footer className="border-t border-ui-border-base w-full">
+          <div className="content-container flex flex-col w-full">
+            <div className="flex flex-col gap-y-6 xsmall:flex-row items-start justify-between py-40">
+              <div className="h-6 w-32 bg-gray-200 animate-pulse" />
+              <div className="grid grid-cols-3 gap-16">
+                <div className="h-32 w-24 bg-gray-200 animate-pulse" />
+                <div className="h-32 w-24 bg-gray-200 animate-pulse" />
+                <div className="h-32 w-24 bg-gray-200 animate-pulse" />
+              </div>
+            </div>
+            <div className="h-4 w-full bg-gray-200 animate-pulse mb-16" />
+          </div>
+        </footer>
+      }
+    >
+      <FooterContent />
+    </Suspense>
+  )
 }
