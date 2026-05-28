@@ -12,9 +12,7 @@
     "build": "next build",
     "start": "next start -p 8000",
     "lint": "next lint",
-    "analyze": "ANALYZE=true next build",
-    "cloud:preinstall": "echo 'storefront preinstall hook'",
-    "cloud:prebuild": "echo 'storefront prebuild hook'"
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
