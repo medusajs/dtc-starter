@@ -2,15 +2,20 @@ import { loadEnv, defineConfig } from '@medusajs/framework/utils'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
+const isProduction = process.env.NODE_ENV === 'production'
+const useSSL = process.env.DATABASE_SSL === "true"
+
 module.exports = defineConfig({
   projectConfig: {
     workerMode: process.env.MEDUSA_WORKER_MODE as "shared" | "worker" | "server",
     redisUrl: process.env.REDIS_URL,
     databaseUrl: process.env.DATABASE_URL,
-    databaseDriverOptions: {
-      ssl: false,
-      sslmode: "disable",
-    },
+    databaseDriverOptions: useSSL ? {
+      ssl: {
+        rejectUnauthorized: false
+      },
+      sslmode: "require",
+    } : {},
     http: {
       storeCors: process.env.STORE_CORS!,
       adminCors: process.env.ADMIN_CORS!,
@@ -19,8 +24,8 @@ module.exports = defineConfig({
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },
     cookieOptions: {
-      sameSite: "lax",
-      secure: false,
+      sameSite: isProduction ? "strict" : "lax",
+      secure: isProduction,
     },
   },
   modules: [

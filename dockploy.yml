@@ -1,15 +1,23 @@
+# Dockploy Deployment Configuration
+# https://dockploy.com/docs
+
+project:
+  name: medusa-dtc-starter
+  description: Medusa V2 DTC Starter - E-commerce platform
+
 services:
-  # PostgreSQL Database
   postgres:
     image: postgres:16-alpine
     container_name: medusa_postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: medusa-store
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      - POSTGRES_DB=medusa-store
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     ports:
-      - "5432:5432"
+      - target: 5432
+        published: 5432
+        protocol: tcp
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -17,38 +25,35 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    depends_on: []
 
-  # Redis
   redis:
     image: redis:7-alpine
     container_name: medusa_redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - target: 6379
+        published: 6379
+        protocol: tcp
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 10
+    depends_on: []
 
-  # Medusa Server (Backend)
   medusa:
-    build:
-      context: .
-      dockerfile: apps/backend/Dockerfile
+    image: ghcr.io/shubashbiswas/dtc-starter-backend:latest
     container_name: medusa_backend
     restart: unless-stopped
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     ports:
-      - "9000:9000"
+      - target: 9000
+        published: 9000
+        protocol: tcp
     environment:
       - NODE_ENV=production
-      - DATABASE_SSL=false
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/medusa-store
+      - DATABASE_SSL=false
       - REDIS_URL=redis://redis:6379
       - CACHE_REDIS_URL=redis://redis:6379
       - LOCKING_REDIS_URL=redis://redis:6379
@@ -61,35 +66,36 @@ services:
       - MEDUSA_SEED=true
       - PORT=9000
       - MEDUSA_BACKEND_URL=http://localhost:9000
-    env_file:
-      - apps/backend/.env
     volumes:
       - backend_data:/server/apps/backend/uploads
+    depends_on:
+      - postgres
+      - redis
     healthcheck:
-      disable: true
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
 
-  # Storefront (Next.js)
   storefront:
-    build:
-      context: .
-      dockerfile: apps/storefront/Dockerfile
+    image: ghcr.io/shubashbiswas/dtc-starter-storefront:latest
     container_name: medusa_storefront
     restart: unless-stopped
-    extra_hosts:
-      - "docker-internal-host:host-gateway"
-    depends_on:
-      medusa:
-        condition: service_started
     ports:
-      - "8000:8000"
+      - target: 8000
+        published: 8000
+        protocol: tcp
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://docker-internal-host:9000
+      - NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://medusa:9000
       - NEXT_PUBLIC_DEFAULT_REGION=dk
       - NEXT_PUBLIC_BASE_URL=http://localhost:8000
-    env_file:
-      - apps/storefront/.env
+    depends_on:
+      - medusa
 
 volumes:
   postgres_data:
+    driver: local
   backend_data:
+    driver: local

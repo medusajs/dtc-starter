@@ -1,0 +1,101 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: medusa_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-medusa-store}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - medusa-network
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: medusa_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - medusa-network
+
+  # Medusa Server (Backend)
+  medusa:
+    image: ${BACKEND_IMAGE:-ghcr.io/shubashbiswas/dtc-starter-backend}:${IMAGE_TAG:-latest}
+    container_name: medusa_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "${BACKEND_PORT:-9000}:9000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_SSL=${DATABASE_SSL:-true}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - CACHE_REDIS_URL=${CACHE_REDIS_URL:-redis://redis:6379}
+      - LOCKING_REDIS_URL=${LOCKING_REDIS_URL:-redis://redis:6379}
+      - STORE_CORS=${STORE_CORS}
+      - ADMIN_CORS=${ADMIN_CORS}
+      - AUTH_CORS=${AUTH_CORS}
+      - JWT_SECRET=${JWT_SECRET}
+      - COOKIE_SECRET=${COOKIE_SECRET}
+      - MEDUSA_WORKER_MODE=${MEDUSA_WORKER_MODE:-server}
+      - MEDUSA_SEED=${MEDUSA_SEED:-false}
+      - PORT=9000
+      - MEDUSA_BACKEND_URL=${MEDUSA_BACKEND_URL}
+    volumes:
+      - backend_data:/server/apps/backend/uploads
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - medusa-network
+
+  # Storefront (Next.js)
+  storefront:
+    image: ${STOREFRONT_IMAGE:-ghcr.io/shubashbiswas/dtc-starter-storefront}:${IMAGE_TAG:-latest}
+    container_name: medusa_storefront
+    restart: unless-stopped
+    depends_on:
+      medusa:
+        condition: service_started
+    ports:
+      - "${STOREFRONT_PORT:-8000}:8000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_MEDUSA_BACKEND_URL=${NEXT_PUBLIC_MEDUSA_BACKEND_URL}
+      - NEXT_PUBLIC_DEFAULT_REGION=${NEXT_PUBLIC_DEFAULT_REGION:-dk}
+      - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
+    networks:
+      - medusa-network
+
+volumes:
+  postgres_data:
+  backend_data:
+
+networks:
+  medusa-network:
+    driver: bridge
