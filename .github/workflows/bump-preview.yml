@@ -14,8 +14,16 @@ name: Bump preview & verify Cloud deployment
 # GITHUB_TOKEN, or grant an exception).
 
 on:
+  # schedule + workflow_dispatch only fire from the DEFAULT branch. This workflow
+  # lives only on `preview`, so it is triggered by a TAG push instead: a scheduled
+  # workflow in another repo pushes a fresh bump-preview-* tag here to nudge it
+  # (e.g. daily). Unique tag names make each nudge a real push event, and a tag
+  # push — unlike a branch commit — doesn't fire a spurious Cloud deploy (the real
+  # deploy happens only when the bump commits a new preview to `preview`).
+  push:
+    tags: ["bump-preview-*"]
   schedule:
-    - cron: "0 6 * * *" # daily at 06:00 UTC
+    - cron: "0 6 * * *" # daily at 06:00 UTC (only runs if on the default branch)
   workflow_dispatch:
 
 concurrency:
@@ -253,3 +261,14 @@ jobs:
           curl -sSf -X POST -H "Content-type: application/json" \
             --data "$PAYLOAD" \
             "$SLACK_WEBHOOK_URL_CLOUD"
+
+      # Delete the ephemeral trigger tag so bump-preview-* tags don't accumulate.
+      # Runs regardless of outcome and never fails the workflow.
+      - name: Clean up the trigger tag
+        if: always() && startsWith(github.ref, 'refs/tags/bump-preview-')
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "Deleting trigger tag ${{ github.ref_name }}..."
+          gh api --method DELETE "repos/${{ github.repository }}/git/refs/tags/${{ github.ref_name }}"
