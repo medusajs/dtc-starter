@@ -7,6 +7,9 @@
   "keywords": [
     "medusa-storefront"
   ],
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "dev": "next dev --turbopack -p 8000",
     "build": "next build",
