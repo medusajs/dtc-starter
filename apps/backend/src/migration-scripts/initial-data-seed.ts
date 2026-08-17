@@ -10,6 +10,7 @@ import {
   createCollectionsWorkflow,
   createInventoryLevelsWorkflow,
   createProductCategoriesWorkflow,
+  createProductOptionsWorkflow,
   createProductsWorkflow,
   createRegionsWorkflow,
   createSalesChannelsWorkflow,
@@ -321,6 +322,25 @@ export default async function initial_data_seed({
     },
   });
 
+  const { result: productOptionsResult } = await createProductOptionsWorkflow(
+    container
+  ).run({
+    input: {
+      product_options: [
+        {
+          title: "Size",
+          values: ["S", "M", "L", "XL"],
+        },
+        {
+          title: "Color",
+          values: ["Black", "White"],
+        },
+      ],
+    },
+  });
+  const sizeOption = productOptionsResult.find((o) => o.title === "Size")!;
+  const colorOption = productOptionsResult.find((o) => o.title === "Color")!;
+
   await createProductsWorkflow(container).run({
     input: {
       products: [
@@ -350,14 +370,8 @@ export default async function initial_data_seed({
             },
           ],
           options: [
-            {
-              title: "Size",
-              values: ["S", "M", "L", "XL"],
-            },
-            {
-              title: "Color",
-              values: ["Black", "White"],
-            },
+            { id: sizeOption.id },
+            { id: colorOption.id },
           ],
           variants: [
             {
@@ -530,12 +544,7 @@ export default async function initial_data_seed({
               url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-back.png",
             },
           ],
-          options: [
-            {
-              title: "Size",
-              values: ["S", "M", "L", "XL"],
-            },
-          ],
+          options: [{ id: sizeOption.id }],
           variants: [
             {
               title: "S",
@@ -631,12 +640,7 @@ export default async function initial_data_seed({
               url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatpants-gray-back.png",
             },
           ],
-          options: [
-            {
-              title: "Size",
-              values: ["S", "M", "L", "XL"],
-            },
-          ],
+          options: [{ id: sizeOption.id }],
           variants: [
             {
               title: "S",
@@ -732,12 +736,7 @@ export default async function initial_data_seed({
               url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-back.png",
             },
           ],
-          options: [
-            {
-              title: "Size",
-              values: ["S", "M", "L", "XL"],
-            },
-          ],
+          options: [{ id: sizeOption.id }],
           variants: [
             {
               title: "S",

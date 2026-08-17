@@ -3,7 +3,7 @@
   "private": false,
   "packageManager": "pnpm@10.11.1",
   "engines": {
-    "node": ">=20"
+    "node": "^20.19.0 || >=22.12.0"
   },
   "scripts": {
     "dev": "pnpm -r dev",
@@ -24,7 +24,10 @@
     }
   },
   "devDependencies": {
-    "turbo": "^2.0.14",
-    "prettier": "^3.2.5"
+    "@medusajs/eslint-plugin": "2.19.0",
+    "eslint": "^9.39.4",
+    "jiti": "^2.7.0",
+    "prettier": "^3.2.5",
+    "turbo": "^2.0.14"
   }
 }

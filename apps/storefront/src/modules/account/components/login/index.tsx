@@ -21,6 +21,15 @@ const Login = ({ setCurrentView }: Props) => {
       <p className="text-center text-base-regular text-ui-fg-base mb-8">
         Sign in to access an enhanced shopping experience.
       </p>
+      {message?.state === "verification_required" && (
+        <div
+          className="w-full mb-6 text-center text-base-regular text-ui-fg-base bg-ui-bg-subtle border border-ui-border-base rounded-rounded p-4"
+          data-testid="login-verification-message"
+        >
+          We sent a verification link to <strong>{message.email}</strong>.
+          Please verify your email, then sign in.
+        </div>
+      )}
       <form className="w-full" action={formAction}>
         <div className="flex flex-col w-full gap-y-2">
           <Input
@@ -41,7 +50,10 @@ const Login = ({ setCurrentView }: Props) => {
             data-testid="password-input"
           />
         </div>
-        <ErrorMessage error={message} data-testid="login-error-message" />
+        <ErrorMessage
+          error={message?.state === "error" ? message.error : null}
+          data-testid="login-error-message"
+        />
         <SubmitButton data-testid="sign-in-button" className="w-full mt-6">
           Sign in
         </SubmitButton>
