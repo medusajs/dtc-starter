@@ -87,8 +87,18 @@ type ProductDocument = {
  * `fields` below — the storefront may only reference what is declared there.
  */
 function toDocument(product: ProductRow): ProductDocument {
+  const collectionTitle = product.collection?.title?.trim()
+  const categoryNames = (product.categories ?? [])
+    .map((category) => category?.name?.trim())
+    .filter((name): name is string => Boolean(name))
+  const tags = (product.tags ?? [])
+    .map((tag) => tag?.value?.trim())
+    .filter((value): value is string => Boolean(value))
+  const optionValues = toOptionValues(product.options)
+
   return {
     id: product.id,
+    // Nulls are fine on these: the storefront reads them and none is faceted.
     title: product.title ?? null,
     subtitle: product.subtitle ?? null,
     description: product.description ?? null,
@@ -96,14 +106,16 @@ function toDocument(product: ProductRow): ProductDocument {
     thumbnail: product.thumbnail ?? null,
     status: product.status ?? null,
     created_at: product.created_at ?? null,
-    collection_title: product.collection?.title ?? null,
-    category_names: (product.categories ?? [])
-      .map((category) => category?.name)
-      .filter((name): name is string => Boolean(name)),
-    tags: (product.tags ?? [])
-      .map((tag) => tag?.value)
-      .filter((value): value is string => Boolean(value)),
-    option_values: toOptionValues(product.options),
+    // The facetable fields are left out entirely when there is nothing to
+    // index, rather than written as `null` or `[]`. Whether an engine counts a
+    // missing value as its own facet bucket is provider-specific — Postgres'
+    // `native` engine skips it, others surface it as a blank filter row — and
+    // an absent key gives none of them anything to bucket. `upsert` replaces
+    // the whole document, so a product that loses its collection loses the key.
+    ...(collectionTitle ? { collection_title: collectionTitle } : {}),
+    ...(categoryNames.length ? { category_names: categoryNames } : {}),
+    ...(tags.length ? { tags } : {}),
+    ...(optionValues.length ? { option_values: optionValues } : {}),
   }
 }
 
