@@ -1,44 +1,34 @@
-import { Suspense } from "react"
+"use client"
 
-import { OptionValueIds } from "@lib/util/product-option-filters"
-import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-grid"
-import RefinementList from "@modules/store/components/refinement-list"
-import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
+import type { SearchClient } from "instantsearch.js"
+import { Configure, InstantSearch } from "react-instantsearch"
 
-import PaginatedProducts from "./paginated-products"
+import { PRODUCT_INDEX_NAME, searchClient } from "@lib/search-client"
+import StoreHits from "@modules/store/components/store-hits"
+import StoreRefinements from "@modules/store/components/store-refinements"
 
-const StoreTemplate = ({
-  sortBy,
-  page,
-  countryCode,
-  optionValueIds,
-}: {
-  sortBy?: SortOptions
-  page?: string
-  countryCode: string
-  optionValueIds?: OptionValueIds
-}) => {
-  const pageNumber = page ? parseInt(page) : 1
-  const sort = sortBy || "created_at"
+const PRODUCT_LIMIT = 12
 
+const StoreTemplate = () => {
   return (
-    <div
-      className="flex flex-col small:flex-row small:items-start py-6 content-container"
-      data-testid="category-container"
-    >
-      <RefinementList sortBy={sort} />
-      <div className="w-full">
-        <div className="mb-8 text-2xl-semi">
-          <h1 data-testid="store-page-title">All products</h1>
-        </div>
-        <Suspense fallback={<SkeletonProductGrid />}>
-          <PaginatedProducts
-            sortBy={sort}
-            page={pageNumber}
-            countryCode={countryCode}
-            optionValueIds={optionValueIds}
-          />
-        </Suspense>
+    <div className="py-6 content-container" data-testid="category-container">
+      <div className="mb-8 text-2xl-semi">
+        <h1 data-testid="store-page-title">All products</h1>
+      </div>
+
+      <div className="flex flex-col small:flex-row small:items-start">
+        <InstantSearch
+          indexName={PRODUCT_INDEX_NAME}
+          searchClient={searchClient as unknown as SearchClient}
+          routing
+          future={{ preserveSharedStateOnUnmount: true }}
+        >
+          <Configure hitsPerPage={PRODUCT_LIMIT} />
+          <StoreRefinements />
+          <div className="w-full min-w-0">
+            <StoreHits hitsPerPage={PRODUCT_LIMIT} />
+          </div>
+        </InstantSearch>
       </div>
     </div>
   )

@@ -25,11 +25,11 @@ const FilterRadioGroup = ({
         {items?.map((i) => (
           <div
             key={i.value}
-            className={clx("flex gap-x-2 items-center", {
+            className={clx("flex items-center", {
               "ml-[-23px]": i.value === value,
             })}
           >
-            {i.value === value && <EllipseMiniSolid />}
+            {i.value === value && <EllipseMiniSolid className="mr-2" />}
             <RadioGroup.Item
               checked={i.value === value}
               onChange={() => handleChange(i.value)}
