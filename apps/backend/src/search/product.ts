@@ -5,7 +5,7 @@
  * Medusa's search index loader before the app boots; `defineSearchIndex` does
  * the registering, so this file only has to declare the index.
  */
-import { defineSearchIndex } from '@medusajs/framework/utils'
+import { defineSearchIndex, search } from '@medusajs/framework/utils'
 
 /**
  * The `query.graph` fields the documents are built from. Every field written to
@@ -132,49 +132,47 @@ function idsFromEvent(data: unknown): string[] {
 }
 
 export default defineSearchIndex({
-  name: 'product',
-  entity: 'product',
-  fields: {
-    id: { type: 'keyword', filterable: true },
-    // Free-text matching. `title` is weighted highest so an exact title beats a
-    // description that happens to mention the same word.
-    title: { type: 'text', searchable: { weight: 5 }, sortable: true },
-    subtitle: { type: 'text', searchable: { weight: 3 } },
-    description: { type: 'text', searchable: { weight: 1 } },
-    // Rendered by the storefront, never matched against.
-    handle: { type: 'keyword', filterable: true },
-    thumbnail: { type: 'keyword' },
-    // Filtered on by the store route so unpublished products never leak.
-    status: { type: 'keyword', filterable: true },
-    created_at: { type: 'date', filterable: true, sortable: true },
-    collection_title: {
-      type: 'keyword',
-      searchable: { weight: 2 },
-      filterable: true,
-      facetable: true,
-    },
-    category_names: {
-      type: 'keyword',
-      array: true,
-      searchable: { weight: 2 },
-      filterable: true,
-      facetable: true,
-    },
-    tags: {
-      type: 'keyword',
-      array: true,
-      filterable: true,
-      facetable: true,
-    },
-    // `"<option title>:<value>"` entries, faceted by the storefront's option
-    // picker. Not searchable — free text should not match on a size code.
-    option_values: {
-      type: 'keyword',
-      array: true,
-      filterable: true,
-      facetable: true,
-    },
-  },
+  name: "product",
+  entity: "product",
+  primary_key: "id",
+  fields: search.define({
+    id: search.keyword().filterable().retrievable(),
+    title: search.text().searchable({ weight: 3 }).sortable().retrievable(),
+    description: search.text().searchable({ weight: 1 }),
+    handle: search.keyword().retrievable(),
+    thumbnail: search.keyword().retrievable(),
+    status: search.keyword().filterable(),
+    created_at: search.date().sortable().retrievable(),
+    category: search.keyword().array().filterable().facetable().retrievable(),
+    // Searchable (not just filterable) so free-text queries match a brand or
+    // option value directly — e.g. searching "tesco" or "vanilla" — the same
+    // index just contributes more searchable fields, rather than needing a
+    // separate index per field.
+    brand: search
+      .keyword()
+      .searchable({ weight: 2 })
+      .filterable()
+      .facetable()
+      .retrievable(),
+    labels: search.keyword().array().filterable().facetable().retrievable(),
+    option_values: search
+      .keyword()
+      .array()
+      .searchable({ weight: 2 })
+      .filterable()
+      .facetable()
+      .retrievable(),
+    currency_code: search.keyword().retrievable(),
+    original_price: search.float().retrievable(),
+    min_price: search
+      .float()
+      .filterable()
+      .sortable()
+      .facetable({ types: ["stats"] })
+      .retrievable(),
+    on_sale: search.boolean().filterable().facetable().retrievable(),
+    discount_percentage: search.integer().retrievable(),
+  }),
   settings: {
     // Typeahead: completed terms must match in full, the last term is a prefix.
     typo_tolerance: { enabled: true },
