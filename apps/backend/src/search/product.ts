@@ -196,15 +196,9 @@ function toDocument(product: ProductRow): ProductDocument {
     thumbnail: product.thumbnail ?? null,
     status: product.status ?? null,
     created_at: product.created_at ?? null,
-    // The facetable fields are left out entirely when there is nothing to
-    // index, rather than written as `null` or `[]`. Whether an engine counts a
-    // missing value as its own facet bucket is provider-specific — Postgres'
-    // `native` engine skips it, others surface it as a blank filter row — and
-    // an absent key gives none of them anything to bucket. `upsert` replaces
-    // the whole document, so a product that loses a value loses the key.
-    ...(category.length ? { category } : {}),
-    ...(labels.length ? { labels } : {}),
-    ...(optionValues.length ? { option_values: optionValues } : {}),
+    category,
+    labels,
+    option_values: optionValues,
     ...toPricing(product.variants),
     // `brand` is intentionally never written: nothing in this project supplies
     // one. The field stays declared so it can be populated without a schema
@@ -237,16 +231,6 @@ export default defineSearchIndex({
     status: search.keyword().filterable(),
     created_at: search.date().sortable().retrievable(),
     category: search.keyword().array().filterable().facetable().retrievable(),
-    // Searchable (not just filterable) so free-text queries match a brand or
-    // option value directly — e.g. searching "tesco" or "vanilla" — the same
-    // index just contributes more searchable fields, rather than needing a
-    // separate index per field.
-    brand: search
-      .keyword()
-      .searchable({ weight: 2 })
-      .filterable()
-      .facetable()
-      .retrievable(),
     labels: search.keyword().array().filterable().facetable().retrievable(),
     option_values: search
       .keyword()
