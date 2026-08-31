@@ -4,12 +4,14 @@ import { useClearRefinements, useSortBy } from "react-instantsearch"
 
 import FilterRadioGroup from "@modules/common/components/filter-radio-group"
 import {
+  BRAND_ATTRIBUTE,
   CATEGORY_ATTRIBUTE,
-  COLLECTION_ATTRIBUTE,
+  LABELS_ATTRIBUTE,
   SORT_OPTIONS,
-  TAGS_ATTRIBUTE,
 } from "./attributes"
+import OnSaleToggle from "./on-sale-toggle"
 import OptionRefinements from "./option-refinements"
+import PriceRange from "./price-range"
 import RefinementGroup from "./refinement-group"
 
 const SortProducts = () => {
@@ -50,9 +52,11 @@ const StoreRefinements = () => {
       <SortProducts />
       <ClearRefinements />
       <OptionRefinements />
-      <RefinementGroup attribute={COLLECTION_ATTRIBUTE} title="Collection" />
+      <PriceRange />
+      <OnSaleToggle />
       <RefinementGroup attribute={CATEGORY_ATTRIBUTE} title="Category" />
-      <RefinementGroup attribute={TAGS_ATTRIBUTE} title="Tags" />
+      <RefinementGroup attribute={BRAND_ATTRIBUTE} title="Brand" />
+      <RefinementGroup attribute={LABELS_ATTRIBUTE} title="Labels" />
     </div>
   )
 }

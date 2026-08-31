@@ -5,7 +5,11 @@
  * Medusa's search index loader before the app boots; `defineSearchIndex` does
  * the registering, so this file only has to declare the index.
  */
-import { defineSearchIndex, search } from '@medusajs/framework/utils'
+import {
+  defineSearchIndex,
+  QueryContext,
+  search,
+} from '@medusajs/framework/utils'
 
 /**
  * The `query.graph` fields the documents are built from. Every field written to
@@ -14,37 +18,69 @@ import { defineSearchIndex, search } from '@medusajs/framework/utils'
 const PRODUCT_GRAPH_FIELDS = [
   'id',
   'title',
-  'subtitle',
   'description',
   'handle',
   'thumbnail',
   'status',
   'created_at',
-  'collection.title',
   'categories.name',
   'tags.value',
   'options.title',
   'options.values.value',
+  'variants.calculated_price.calculated_amount',
+  'variants.calculated_price.original_amount',
+  'variants.calculated_price.currency_code',
 ]
+
+/**
+ * The index holds one price per product, so it needs a single reference
+ * currency. Prices are resolved through the Pricing Module for this currency,
+ * which is what makes `original_price` differ from `min_price` when a price
+ * list applies. A storefront selling in another currency can still filter and
+ * sort on these, but must render amounts from the product API, not the index.
+ */
+const PRICE_CURRENCY_CODE = 'eur'
+
+/**
+ * The pricing context `calculated_price` needs. Without it the Pricing Module
+ * refuses to calculate: "requires currency_code in the pricing context".
+ */
+const PRICE_CONTEXT = {
+  variants: {
+    calculated_price: QueryContext({ currency_code: PRICE_CURRENCY_CODE }),
+  },
+}
 
 const SEED_BATCH_SIZE = 200
 
 type ProductRow = {
   id: string
   title?: string | null
-  subtitle?: string | null
   description?: string | null
   handle?: string | null
   thumbnail?: string | null
   status?: string | null
   created_at?: string | Date | null
-  collection?: { title?: string | null } | null
   categories?: ({ name?: string | null } | null)[] | null
   tags?: ({ value?: string | null } | null)[] | null
   options?:
     | ({
         title?: string | null
         values?: ({ value?: string | null } | null)[] | null
+      } | null)[]
+    | null
+  variants?:
+    | ({
+        calculated_price?: {
+          calculated_amount?: number | null
+          original_amount?: number | null
+          currency_code?: string | null
+        } | null
+        // `calculated_price` is computed by the Pricing Module rather than
+        // declared on the variant type, so the graph's `ProductVariant` shares
+        // no properties with the shape above. The index signature keeps
+        // TypeScript's weak-type check from rejecting it.
+        [key: string]: unknown
       } | null)[]
     | null
 }
@@ -73,6 +109,60 @@ function toOptionValues(options: ProductRow['options']): string[] {
 }
 
 /**
+ * The cheapest variant's pricing, as the index's five price fields. Picking one
+ * variant keeps `min_price` and `original_price` a matching pair, so the
+ * discount describes a real product rather than mixing two variants' amounts.
+ */
+function toPricing(variants: ProductRow['variants']): Record<string, unknown> {
+  let cheapest:
+    | { calculated: number; original: number; currency: string }
+    | undefined
+
+  for (const variant of variants ?? []) {
+    const price = variant?.calculated_price
+    const calculated = price?.calculated_amount
+
+    // A variant with no price for this currency can't be the cheapest.
+    if (typeof calculated !== 'number') {
+      continue
+    }
+
+    const original =
+      typeof price?.original_amount === 'number'
+        ? price.original_amount
+        : calculated
+
+    if (!cheapest || calculated < cheapest.calculated) {
+      cheapest = {
+        calculated,
+        original,
+        currency: price?.currency_code?.trim() || PRICE_CURRENCY_CODE,
+      }
+    }
+  }
+
+  if (!cheapest) {
+    return {}
+  }
+
+  const onSale = cheapest.original > cheapest.calculated
+
+  return {
+    currency_code: cheapest.currency,
+    min_price: cheapest.calculated,
+    original_price: cheapest.original,
+    // Written even when false: "not on sale" is a real facet bucket, unlike a
+    // missing value.
+    on_sale: onSale,
+    discount_percentage: onSale
+      ? Math.round(
+          ((cheapest.original - cheapest.calculated) / cheapest.original) * 100
+        )
+      : 0,
+  }
+}
+
+/**
  * A document this index holds. Declared locally rather than imported from
  * `@medusajs/types` so the file cannot bind to a second copy of that package —
  * `defineSearchIndex` already types `consume` and `seed` contextually.
@@ -87,11 +177,12 @@ type ProductDocument = {
  * `fields` below — the storefront may only reference what is declared there.
  */
 function toDocument(product: ProductRow): ProductDocument {
-  const collectionTitle = product.collection?.title?.trim()
-  const categoryNames = (product.categories ?? [])
-    .map((category) => category?.name?.trim())
+  const category = (product.categories ?? [])
+    .map((productCategory) => productCategory?.name?.trim())
     .filter((name): name is string => Boolean(name))
-  const tags = (product.tags ?? [])
+  // ASSUMPTION: `labels` is fed by product tags — the only free-form keyword
+  // list a product carries here. Swap the source if it means something else.
+  const labels = (product.tags ?? [])
     .map((tag) => tag?.value?.trim())
     .filter((value): value is string => Boolean(value))
   const optionValues = toOptionValues(product.options)
@@ -100,7 +191,6 @@ function toDocument(product: ProductRow): ProductDocument {
     id: product.id,
     // Nulls are fine on these: the storefront reads them and none is faceted.
     title: product.title ?? null,
-    subtitle: product.subtitle ?? null,
     description: product.description ?? null,
     handle: product.handle ?? null,
     thumbnail: product.thumbnail ?? null,
@@ -111,11 +201,14 @@ function toDocument(product: ProductRow): ProductDocument {
     // missing value as its own facet bucket is provider-specific — Postgres'
     // `native` engine skips it, others surface it as a blank filter row — and
     // an absent key gives none of them anything to bucket. `upsert` replaces
-    // the whole document, so a product that loses its collection loses the key.
-    ...(collectionTitle ? { collection_title: collectionTitle } : {}),
-    ...(categoryNames.length ? { category_names: categoryNames } : {}),
-    ...(tags.length ? { tags } : {}),
+    // the whole document, so a product that loses a value loses the key.
+    ...(category.length ? { category } : {}),
+    ...(labels.length ? { labels } : {}),
     ...(optionValues.length ? { option_values: optionValues } : {}),
+    ...toPricing(product.variants),
+    // `brand` is intentionally never written: nothing in this project supplies
+    // one. The field stays declared so it can be populated without a schema
+    // change, but until then it contributes nothing to search or faceting.
   }
 }
 
@@ -193,6 +286,7 @@ export default defineSearchIndex({
       entity: 'product',
       fields: PRODUCT_GRAPH_FIELDS,
       filters: { id: ids },
+      context: PRICE_CONTEXT,
     })
 
     // A product that no longer resolves was deleted between the event and now.
@@ -213,6 +307,7 @@ export default defineSearchIndex({
         fields: PRODUCT_GRAPH_FIELDS,
         filters: filters ?? {},
         pagination: { skip, take: SEED_BATCH_SIZE, order: { id: 'ASC' } },
+        context: PRICE_CONTEXT,
       })
 
       if (!products.length) {

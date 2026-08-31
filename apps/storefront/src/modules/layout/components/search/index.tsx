@@ -43,6 +43,7 @@ const SearchPanel = ({ onNavigate }: { onNavigate: () => void }) => {
 
   const hasInput = Boolean(inputValue.trim())
   const isPending = inputValue.trim() !== query.trim()
+  const hasResults = Boolean(query.trim()) && items.length > 0
 
   return (
     <>
@@ -86,13 +87,13 @@ const SearchPanel = ({ onNavigate }: { onNavigate: () => void }) => {
           >
             Searching&hellip;
           </Text>
-        ) : items.length ? (
+        ) : hasResults ? (
           <ul className="py-2" data-testid="search-results">
             {items.map((hit) => (
               <SearchHit key={hit.objectID} hit={hit} onNavigate={onNavigate} />
             ))}
           </ul>
-        ) : isPending ? (
+        ) : isPending || !query.trim() ? (
           <Text
             className="px-4 py-6 text-center text-ui-fg-muted"
             data-testid="search-loading"

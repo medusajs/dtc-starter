@@ -7,15 +7,17 @@ import { sdk } from "@lib/config"
 
 export const PRODUCT_INDEX_NAME = "product"
 
-const medusaSdk = sdk as unknown as MedusaSdkLike
-
+/**
+ * Shared by the navbar search drawer and the store listing. An empty query
+ * searches rather than short-circuiting, which is what the listing needs to
+ * show every product before anything is refined.
+ */
 export const { searchClient } = createInstantSearchAdapter({
-  sdk: medusaSdk,
+  sdk: sdk as unknown as MedusaSdkLike,
   path: "/store/search",
-  placeholderSearch: false,
-})
-
-export const { searchClient: browseSearchClient } = createInstantSearchAdapter({
-  sdk: medusaSdk,
-  path: "/store/search",
+  // Range widgets read `facets_stats`, which the adapter only produces for
+  // fields listed here — it requests a `stats` facet for them instead of a
+  // `value` facet. `min_price` is declared `facetable({ types: ["stats"] })`
+  // on the index, which is what makes the stats available at all.
+  numericAttributes: ["min_price"],
 })

@@ -3,7 +3,7 @@
 import type { SearchClient } from "instantsearch.js"
 import { Configure, InstantSearch } from "react-instantsearch"
 
-import { browseSearchClient, PRODUCT_INDEX_NAME } from "@lib/search-client"
+import { PRODUCT_INDEX_NAME, searchClient } from "@lib/search-client"
 import StoreHits from "@modules/store/components/store-hits"
 import StoreRefinements from "@modules/store/components/store-refinements"
 
@@ -19,7 +19,7 @@ const StoreTemplate = () => {
       <div className="flex flex-col small:flex-row small:items-start">
         <InstantSearch
           indexName={PRODUCT_INDEX_NAME}
-          searchClient={browseSearchClient as unknown as SearchClient}
+          searchClient={searchClient as unknown as SearchClient}
           routing
           future={{ preserveSharedStateOnUnmount: true }}
         >
