@@ -5,6 +5,7 @@ import useToggleState from "@lib/hooks/use-toggle-state"
 import { ArrowRightMini, XMark } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import { getStoreName } from "@lib/util/env"
 import { Text, clx } from "@modules/common/components/ui"
 import { Fragment } from "react"
 import CountrySelect from "../country-select"
@@ -127,8 +128,8 @@ const SideMenu = ({ regions, locales, currentLocale }: SideMenuProps) => {
                         />
                       </div>
                       <Text className="flex justify-between txt-compact-small">
-                        © {new Date().getFullYear()} Medusa Store. All rights
-                        reserved.
+                        © {new Date().getFullYear()} {getStoreName()}. All
+                        rights reserved.
                       </Text>
                     </div>
                   </div>
