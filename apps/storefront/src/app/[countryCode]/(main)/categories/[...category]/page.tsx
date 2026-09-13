@@ -8,6 +8,8 @@ import CategoryTemplate from "@modules/categories/templates"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import { parseOptionValueIds } from "@lib/util/product-option-filters"
 
+import CategoryBarCarousel from "@modules/common/components/shared/category-bar"
+
 type Props = {
   params: Promise<{ category: string[]; countryCode: string }>
   searchParams: Promise<
@@ -79,13 +81,22 @@ export default async function CategoryPage(props: Props) {
     notFound()
   }
 
+  const categories = await listCategories()
+
   return (
-    <CategoryTemplate
-      category={productCategory}
-      sortBy={sortBy}
-      page={page}
-      countryCode={params.countryCode}
-      optionValueIds={optionValueIds}
-    />
+    <>
+      <CategoryBarCarousel
+        categories={categories}
+        selectedCategory={productCategory.name}
+        countryCode={params.countryCode}
+      />
+      <CategoryTemplate
+        category={productCategory}
+        sortBy={sortBy}
+        page={page}
+        countryCode={params.countryCode}
+        optionValueIds={optionValueIds}
+      />
+    </>
   )
 }

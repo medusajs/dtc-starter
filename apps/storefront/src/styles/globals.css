@@ -2,6 +2,67 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+:root {
+  --btn-primary-bg: #1d4ed8;
+  --btn-primary-text: #ffffff;
+  --btn-primary-hover: #1e40af;
+  --btn-primary-active: #172554;
+  --btn-secondary-bg: #f1f5f9;
+  --btn-secondary-text: #0f172a;
+  --btn-secondary-border: #e2e8f0;
+  --btn-secondary-hover-bg: #f8fafc;
+  --btn-secondary-hover-border: #94a3b8;
+  --btn-transparent-bg: transparent;
+  --btn-transparent-text: #0f172a;
+  --btn-transparent-hover: #f1f5f9;
+  --btn-outline-bg: transparent;
+  --btn-outline-text: #0f172a;
+  --btn-outline-border: #e2e8f0;
+  --btn-outline-hover-bg: #f8fafc;
+  --btn-ghost-bg: transparent;
+  --btn-ghost-text: #0f172a;
+  --btn-ghost-hover: #f1f5f9;
+  --btn-danger-bg: #dc2626;
+  --btn-danger-text: #ffffff;
+  --btn-danger-hover: #b91c1c;
+  --radius-btn: 0.375rem;
+
+  /* BEGIN CUSTOM GLOBAL STYLES — Surface and border tokens */
+  --bg-surface-subtle: #f8fafc;
+  --border-subtle: #f1f5f9;
+  --border-strong: #cbd5e1;
+  /* END CUSTOM GLOBAL STYLES — Surface and border tokens */
+
+  /* BEGIN CUSTOM GLOBAL STYLES — Category bar tokens */
+  --cat-inactive-bg: rgba(241, 245, 249, 0.9);
+  --cat-inactive-text: #475569;
+  --cat-inactive-border: rgba(226, 232, 240, 0.6);
+  --cat-active-bg: #2563eb;
+  --cat-active-text: #ffffff;
+  --cat-inactive-hover-bg: rgba(226, 232, 240, 0.94);
+  --cat-inactive-hover-text: #0f172a;
+  --cat-inactive-hover-border: rgba(226, 232, 240, 0.8);
+  --cat-btn-shadow-rest: 0 1px 2px 0 rgba(0,0,0,.04), 0 1px 2px -1px rgba(0,0,0,.03);
+  --cat-btn-shadow-hover: 0 1px 3px 0 rgba(0,0,0,.08), 0 1px 2px -1px rgba(0,0,0,.04);
+  /* END CUSTOM GLOBAL STYLES — Category bar tokens */
+}
+
+.dark {
+  color-scheme: dark;
+  /* BEGIN CUSTOM GLOBAL STYLES — Category bar dark mode tokens */
+  --cat-inactive-bg: rgba(30, 41, 59, 0.88);
+  --cat-inactive-text: #e2e8f0;
+  --cat-inactive-border: rgba(51, 65, 85, 0.55);
+  --cat-active-bg: #2563eb;
+  --cat-active-text: #ffffff;
+  --cat-inactive-hover-bg: rgba(51, 65, 85, 0.88);
+  --cat-inactive-hover-text: #f1f5f9;
+  --cat-inactive-hover-border: rgba(51, 65, 85, 0.8);
+  --cat-btn-shadow-rest: 0 1px 2px 0 rgba(0,0,0,.3), 0 1px 2px -1px rgba(0,0,0,.25);
+  --cat-btn-shadow-hover: 0 1px 3px 0 rgba(0,0,0,.4), 0 1px 2px -1px rgba(0,0,0,.3);
+  /* END CUSTOM GLOBAL STYLES — Category bar dark mode tokens */
+}
+
 @layer utilities {
   /* Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
@@ -16,6 +77,23 @@
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
   }
+
+  /* BEGIN CUSTOM GLOBAL STYLES — Category bar scrollbar hide */
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  /* END CUSTOM GLOBAL STYLES — Category bar scrollbar hide */
+
+  /* BEGIN CUSTOM GLOBAL STYLES — Border utility */
+  .border-subtle {
+    border-color: var(--border-subtle, var(--border-base)) !important;
+  }
+  /* END CUSTOM GLOBAL STYLES — Border utility */
 
   input:focus ~ label,
   input:not(:placeholder-shown) ~ label {
@@ -109,4 +187,152 @@
   .text-3xl-semi {
     @apply text-[32px] leading-[44px] font-semibold;
   }
+
+  .btn-primary {
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: var(--btn-primary-hover);
+  }
+
+  .btn-primary:active:not(:disabled) {
+    background: var(--btn-primary-active);
+  }
+
+  .btn-secondary {
+    background: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+    border: 1px solid var(--btn-secondary-border);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background: var(--btn-secondary-hover-bg);
+    border-color: var(--btn-secondary-hover-border);
+  }
+
+  .btn-transparent {
+    background: var(--btn-transparent-bg);
+    color: var(--btn-transparent-text);
+  }
+
+  .btn-transparent:hover:not(:disabled) {
+    background: var(--btn-transparent-hover);
+  }
+
+  .btn-outline {
+    background: var(--btn-outline-bg);
+    color: var(--btn-outline-text);
+    border: 1px solid var(--btn-outline-border);
+  }
+
+  .btn-outline:hover:not(:disabled) {
+    background: var(--btn-outline-hover-bg);
+  }
+
+  .btn-ghost {
+    background: var(--btn-ghost-bg);
+    color: var(--btn-ghost-text);
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--btn-ghost-hover);
+  }
+
+  .btn-danger {
+    background: var(--btn-danger-bg);
+    color: var(--btn-danger-text);
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    background: var(--btn-danger-hover);
+  }
+
+  .btn-sm {
+    padding: 0.375rem 0.875rem;
+    font-size: 0.8125rem;
+    min-height: 34px;
+  }
+
+  .btn-md {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    min-height: 40px;
+  }
+
+  .btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    min-height: 48px;
+  }
+
+  .btn-icon {
+    padding: 0.5rem;
+    aspect-ratio: 1 / 1;
+    min-height: 40px;
+    min-width: 40px;
+  }
+
+  .btn-icon-circle {
+    border-radius: 9999px;
+  }
+
+  /* BEGIN CUSTOM GLOBAL STYLES — Category bar button classes */
+  .cat-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: var(--radius-full);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: 1px solid var(--cat-inactive-border);
+    background-color: var(--cat-inactive-bg);
+    color: var(--cat-inactive-text);
+    box-shadow: var(--cat-btn-shadow-rest);
+  }
+
+  .cat-btn:hover:not(:disabled) {
+    background-color: var(--cat-inactive-hover-bg);
+    color: var(--cat-inactive-hover-text);
+    border-color: var(--cat-inactive-hover-border);
+    box-shadow: var(--cat-btn-shadow-hover);
+  }
+
+  .cat-btn:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  .cat-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .cat-btn-active {
+    background-color: var(--cat-active-bg);
+    color: var(--cat-active-text);
+    border-color: transparent;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
+  }
+
+  .cat-btn-active:hover {
+    background-color: var(--cat-active-bg);
+    color: var(--cat-active-text);
+    border-color: transparent;
+  }
+  /* END CUSTOM GLOBAL STYLES — Category bar button classes */
+
+  /* BEGIN CUSTOM GLOBAL STYLES — Footer surface */
+  .footer-surface {
+    background: var(--bg-surface-subtle);
+    border-top: 1px solid var(--border-strong);
+    color: var(--fg-base);
+  }
+  /* END CUSTOM GLOBAL STYLES — Footer surface */
 }

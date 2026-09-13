@@ -3,6 +3,8 @@ import { Metadata } from "next"
 import { parseOptionValueIds } from "@lib/util/product-option-filters"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import StoreTemplate from "@modules/store/templates"
+import { listCategories } from "@lib/data/categories"
+import CategoryBarCarousel from "@modules/common/components/shared/category-bar"
 
 export const metadata: Metadata = {
   title: "Store",
@@ -23,17 +25,25 @@ type Params = {
 }
 
 export default async function StorePage(props: Params) {
-  const params = await props.params;
-  const searchParams = await props.searchParams;
+  const params = await props.params
+  const searchParams = await props.searchParams
   const { sortBy, page } = searchParams
   const optionValueIds = parseOptionValueIds(searchParams)
 
+  const categories = await listCategories()
+
   return (
-    <StoreTemplate
-      sortBy={sortBy}
-      page={page}
-      countryCode={params.countryCode}
-      optionValueIds={optionValueIds}
-    />
+    <>
+      <CategoryBarCarousel
+        categories={categories}
+        countryCode={params.countryCode}
+      />
+      <StoreTemplate
+        sortBy={sortBy}
+        page={page}
+        countryCode={params.countryCode}
+        optionValueIds={optionValueIds}
+      />
+    </>
   )
 }

@@ -40,6 +40,7 @@ module.exports = {
         base: "4px",
         rounded: "8px",
         large: "16px",
+        "3xl": "1.5rem",
         circle: "9999px",
       },
       maxWidth: {
