@@ -333,6 +333,10 @@ export async function submitPromotionForm(
   }
 }
 
+function isValidCountryCode(value: unknown): value is string {
+  return typeof value === "string" && /^[a-z]{2}$/.test(value)
+}
+
 // TODO: Pass a POJO instead of a form entity here
 export async function setAddresses(currentState: unknown, formData: FormData) {
   try {
@@ -381,9 +385,12 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
     return e.message
   }
 
-  redirect(
-    `/${formData.get("shipping_address.country_code")}/checkout?step=delivery`
-  )
+  const countryCode = formData.get("shipping_address.country_code")
+  if (!isValidCountryCode(countryCode)) {
+    return "Invalid country code"
+  }
+
+  redirect(`/${countryCode}/checkout?step=delivery`)
 }
 
 /**
