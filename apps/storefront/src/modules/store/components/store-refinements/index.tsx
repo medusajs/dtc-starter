@@ -1,6 +1,6 @@
 "use client"
 
-import { useClearRefinements, useSortBy } from "react-instantsearch"
+import { useSortBy } from "react-instantsearch"
 
 import FilterRadioGroup from "@modules/common/components/filter-radio-group"
 import {
@@ -8,6 +8,7 @@ import {
   LABELS_ATTRIBUTE,
   getSortOptions,
 } from "./attributes"
+import CurrentRefinements from "./current-refinements"
 import OnSaleToggle from "./on-sale-toggle"
 import OptionRefinements from "./option-refinements"
 import PriceRange from "./price-range"
@@ -28,29 +29,11 @@ const SortProducts = ({ currencyCode }: { currencyCode: string }) => {
   )
 }
 
-const ClearRefinements = () => {
-  const { canRefine, refine } = useClearRefinements()
-
-  if (!canRefine) {
-    return null
-  }
-
-  return (
-    <button
-      onClick={refine}
-      className="txt-compact-small-plus text-ui-fg-interactive hover:text-ui-fg-interactive-hover self-start"
-      data-testid="clear-refinements"
-    >
-      Clear all filters
-    </button>
-  )
-}
-
 const StoreRefinements = ({ currencyCode }: { currencyCode: string }) => {
   return (
     <div className="flex flex-col gap-12 py-4 mb-8 small:px-0 pl-6 small:w-[250px] small:shrink-0 small:ml-[1.675rem]">
       <SortProducts currencyCode={currencyCode} />
-      <ClearRefinements />
+      <CurrentRefinements currencyCode={currencyCode} />
       <OptionRefinements />
       <PriceRange currencyCode={currencyCode} />
       <OnSaleToggle currencyCode={currencyCode} />

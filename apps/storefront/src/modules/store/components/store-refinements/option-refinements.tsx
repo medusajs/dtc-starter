@@ -56,6 +56,7 @@ const OptionRefinements = () => {
     limit: FACET_LIMIT,
     // Alphabetical keeps a size or colour list stable as counts move around.
     sortBy: ["name:asc"],
+    operator: "and",
   })
   const [closedGroups, setClosedGroups] = useState<string[]>([])
 

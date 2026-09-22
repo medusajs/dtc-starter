@@ -6,6 +6,7 @@ import { Configure, InstantSearch } from "react-instantsearch"
 import { PRODUCT_INDEX_NAME, searchClient } from "@lib/search-client"
 import StoreHits from "@modules/store/components/store-hits"
 import StoreRefinements from "@modules/store/components/store-refinements"
+import StoreSearchBox from "@modules/store/components/store-search-box"
 
 const PRODUCT_LIMIT = 12
 
@@ -26,6 +27,7 @@ const StoreTemplate = ({ currencyCode }: { currencyCode: string }) => {
           <Configure hitsPerPage={PRODUCT_LIMIT} />
           <StoreRefinements currencyCode={currencyCode} />
           <div className="w-full min-w-0">
+            <StoreSearchBox />
             <StoreHits
               hitsPerPage={PRODUCT_LIMIT}
               currencyCode={currencyCode}

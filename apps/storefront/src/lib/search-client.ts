@@ -13,7 +13,11 @@ export const PRODUCT_INDEX_NAME = "product"
  */
 export const SEARCH_PRICE_CURRENCIES = ["eur", "usd"]
 
-export type PriceField = "min_price" | "max_price" | "original_price" | "on_sale"
+export type PriceField =
+  | "min_price"
+  | "max_price"
+  | "original_price"
+  | "on_sale"
 
 /**
  * The indexed currency to read prices in for a region. A region whose currency
@@ -38,6 +42,11 @@ export const priceAttribute = (field: PriceField, currencyCode: string) =>
 export const { searchClient } = createInstantSearchAdapter({
   sdk: sdk as unknown as MedusaSdkLike,
   path: "/store/search",
+  additionalSearchParameters: {
+    search_options: {
+      match_strategy: "last",
+    },
+  },
   // Range widgets read `facets_stats`, which the adapter only produces for
   // fields listed here. The price fields are declared with a `stats` facet on
   // the index, which is what makes the stats available at all.
