@@ -10,14 +10,22 @@ import { Text } from "@modules/common/components/ui"
 import Thumbnail from "@modules/products/components/thumbnail"
 import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-grid"
 import SearchPagination from "./pagination"
+import HitPrice, { HitPricing } from "./price"
 
-type ProductHit = Hit<{
-  title: string | null
-  handle: string | null
-  thumbnail: string | null
-}>
+type ProductHit = Hit<
+  {
+    title: string | null
+    handle: string | null
+    thumbnail: string | null
+  } & HitPricing
+>
 
-const StoreHits = ({ hitsPerPage }: { hitsPerPage: number }) => {
+type StoreHitsProps = {
+  hitsPerPage: number
+  currencyCode: string
+}
+
+const StoreHits = ({ hitsPerPage, currencyCode }: StoreHitsProps) => {
   const { items } = useHits<ProductHit>()
   const { status, error, indexUiState } = useInstantSearch()
   const { isSearching, hasNoResultsYet } = useSearchSettled()
@@ -84,6 +92,7 @@ const StoreHits = ({ hitsPerPage }: { hitsPerPage: number }) => {
                       >
                         {hit.title}
                       </Text>
+                      <HitPrice hit={hit} currencyCode={currencyCode} />
                     </div>
                   </div>
                 </LocalizedClientLink>

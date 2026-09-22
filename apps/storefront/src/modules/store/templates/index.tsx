@@ -9,7 +9,7 @@ import StoreRefinements from "@modules/store/components/store-refinements"
 
 const PRODUCT_LIMIT = 12
 
-const StoreTemplate = () => {
+const StoreTemplate = ({ currencyCode }: { currencyCode: string }) => {
   return (
     <div className="py-6 content-container" data-testid="category-container">
       <div className="mb-8 text-2xl-semi">
@@ -24,9 +24,12 @@ const StoreTemplate = () => {
           future={{ preserveSharedStateOnUnmount: true }}
         >
           <Configure hitsPerPage={PRODUCT_LIMIT} />
-          <StoreRefinements />
+          <StoreRefinements currencyCode={currencyCode} />
           <div className="w-full min-w-0">
-            <StoreHits hitsPerPage={PRODUCT_LIMIT} />
+            <StoreHits
+              hitsPerPage={PRODUCT_LIMIT}
+              currencyCode={currencyCode}
+            />
           </div>
         </InstantSearch>
       </div>

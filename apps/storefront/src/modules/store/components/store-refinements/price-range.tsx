@@ -2,24 +2,11 @@
 
 import * as Slider from "@radix-ui/react-slider"
 import { useEffect, useState } from "react"
-import { useHits, useRange } from "react-instantsearch"
+import { useRange } from "react-instantsearch"
 
-import { MIN_PRICE_ATTRIBUTE } from "./attributes"
+import { indexedCurrency, priceAttribute } from "@lib/search-client"
 
-/**
- * Formats an amount in the currency the index was built for. The index holds
- * one price per product, and every document carries the `currency_code` it was
- * calculated in, so the currency is read off a hit rather than hardcoded.
- */
-function useAmountFormatter() {
-  const { items } = useHits<{ currency_code?: string | null }>()
-  const currency = items.find((hit) => hit.currency_code)?.currency_code
-
-  return (amount: number) => {
-    if (!currency) {
-      return String(Math.round(amount))
-    }
-
+function formatAmount(amount: number, currency: string) {
     try {
       return new Intl.NumberFormat(undefined, {
         style: "currency",
@@ -30,19 +17,19 @@ function useAmountFormatter() {
       // An unrecognised currency code shouldn't take the sidebar down.
       return `${Math.round(amount)} ${currency.toUpperCase()}`
     }
-  }
 }
 
 /**
- * Price filter over the index's `min_price`, which is declared
- * `facetable({ types: ["stats"] })` — the stats facet is what supplies the
- * slider's bounds. Refines on release rather than per pixel.
+ * Price filter over the region currency's `min_price_*` field, which is
+ * declared `facetable({ types: ["stats"] })` — the stats facet is what
+ * supplies the slider's bounds. Refines on release rather than per pixel.
  */
-const PriceRange = () => {
+const PriceRange = ({ currencyCode }: { currencyCode: string }) => {
   const { start, range, canRefine, refine } = useRange({
-    attribute: MIN_PRICE_ATTRIBUTE,
+    attribute: priceAttribute("min_price", currencyCode),
   })
-  const format = useAmountFormatter()
+  const currency = indexedCurrency(currencyCode)
+  const format = (amount: number) => formatAmount(amount, currency)
 
   const min = Math.floor(range.min ?? 0)
   const max = Math.ceil(range.max ?? 0)

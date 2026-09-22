@@ -1,16 +1,19 @@
-import { allowSearchIndexes, defineMiddlewares } from '@medusajs/framework/http'
+import { configureStoreSearch, defineMiddlewares } from '@medusajs/framework/http'
 
-/**
- * `POST /store/search` reaches no index until one is opted in here. Only
- * published products are ever written to the `product` index, so the storefront
- * needs nothing narrowed at request time.
- */
+// The product index declares filterable `status` and `sales_channel_ids`, so
+// the route narrows it to published products in the key's sales channels.
 export default defineMiddlewares({
   routes: [
     {
       method: ['POST'],
       matcher: '/store/search',
-      middlewares: [allowSearchIndexes('product')],
+      middlewares: [
+        configureStoreSearch({
+          allowed_indexes: {
+            product: true,
+          },
+        }),
+      ],
     },
   ],
 })
