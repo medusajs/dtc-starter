@@ -1,3 +1,11 @@
 packages:
   - "apps/**"
   - "!apps/backend/.medusa/**"
+
+# pnpm 11+
+allowBuilds:
+  "@medusajs/telemetry": true
+
+# pnpm 10.x
+onlyBuiltDependencies:
+  - "@medusajs/telemetry"
