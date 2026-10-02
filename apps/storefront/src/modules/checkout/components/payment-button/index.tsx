@@ -9,6 +9,18 @@ import { useParams } from "next/navigation"
 import React, { useState } from "react"
 import ErrorMessage from "../error-message"
 
+// placeOrder() redirects to the confirmation page on success. Next.js rejects
+// the action promise with the redirect error while it navigates
+// (next/dist/client/components/router-reducer/reducers/server-action-reducer.js),
+// so a successful order must not be shown as a failure. `isRedirectError` is
+// not exported from `next/navigation`, hence the digest check.
+const isRedirectError = (err: unknown) =>
+  typeof err === "object" &&
+  err !== null &&
+  "digest" in err &&
+  typeof err.digest === "string" &&
+  err.digest.startsWith("NEXT_REDIRECT;")
+
 type PaymentButtonProps = {
   cart: HttpTypes.StoreCart
   "data-testid": string
@@ -58,13 +70,18 @@ const StripePaymentButton = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const onPaymentCompleted = async () => {
-    await placeOrder()
-      .catch((err) => {
-        setErrorMessage(err.message)
-      })
-      .finally(() => {
-        setSubmitting(false)
-      })
+    try {
+      await placeOrder()
+    } catch (err) {
+      if (isRedirectError(err)) {
+        // Order placed: keep the button busy while Next.js navigates.
+        return
+      }
+
+      setErrorMessage(err instanceof Error ? err.message : String(err))
+    }
+
+    setSubmitting(false)
   }
 
   const stripe = useStripe()
@@ -161,13 +178,18 @@ const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const onPaymentCompleted = async () => {
-    await placeOrder()
-      .catch((err) => {
-        setErrorMessage(err.message)
-      })
-      .finally(() => {
-        setSubmitting(false)
-      })
+    try {
+      await placeOrder()
+    } catch (err) {
+      if (isRedirectError(err)) {
+        // Order placed: keep the button busy while Next.js navigates.
+        return
+      }
+
+      setErrorMessage(err instanceof Error ? err.message : String(err))
+    }
+
+    setSubmitting(false)
   }
 
   const handlePayment = () => {
