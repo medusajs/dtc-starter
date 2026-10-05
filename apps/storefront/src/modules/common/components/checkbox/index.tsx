@@ -16,21 +16,28 @@ const CheckboxWithLabel: React.FC<CheckboxProps> = ({
   name,
   'data-testid': dataTestId
 }) => {
+  const checkboxId = React.useId()
+  const checkboxRef = React.useRef<HTMLInputElement>(null)
+  // Native form reset must preserve the controlled choice, including failed action retries.
+  React.useLayoutEffect(() => {
+    if (checkboxRef.current) checkboxRef.current.defaultChecked = checked
+  }, [checked])
   return (
     <div className="flex items-center space-x-2 ">
       <Checkbox
         className="text-base-regular flex items-center gap-x-2"
-        id="checkbox"
+        id={checkboxId}
+        ref={checkboxRef}
         role="checkbox"
         checked={checked}
-        readOnly
+        readOnly={!onChange}
         aria-checked={checked}
-        onClick={onChange}
+        onChange={onChange}
         name={name}
         data-testid={dataTestId}
       />
       <Label
-        htmlFor="checkbox"
+        htmlFor={checkboxId}
         className="!transform-none !txt-medium"
       >
         {label}
