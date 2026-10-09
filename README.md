@@ -134,7 +134,7 @@ pnpm dev
 
 The storefront runs on `http://localhost:8000`.
 
-You can slo run the following command from the root to start both backend and storefront:
+You can also run the following command from the root to start both backend and storefront:
 
 ```bash
 pnpm dev
