@@ -8,7 +8,6 @@ import { revalidateTag } from "next/cache"
 import { redirect } from "next/navigation"
 import {
   getAuthHeaders,
-  getCacheOptions,
   getCacheTag,
   getCartId,
   getPendingCustomer,
@@ -44,14 +43,10 @@ export const retrieveCustomer =
   async (): Promise<HttpTypes.StoreCustomer | null> => {
     const authHeaders = await getAuthHeaders()
 
-    if (!authHeaders) return null
+    if (!authHeaders.authorization) return null
 
     const headers = {
       ...authHeaders,
-    }
-
-    const next = {
-      ...(await getCacheOptions("customers")),
     }
 
     return await sdk.client
@@ -61,8 +56,7 @@ export const retrieveCustomer =
           fields: "*orders",
         },
         headers,
-        next,
-        cache: "force-cache",
+        cache: "no-store",
       })
       .then(({ customer }) => customer)
       .catch(() => null)

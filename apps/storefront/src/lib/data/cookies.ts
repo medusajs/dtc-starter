@@ -1,5 +1,6 @@
 import "server-only"
 import { cookies as nextCookies } from "next/headers"
+import { tokenExpiry } from "@lib/util/token-expiry"
 
 export const getAuthHeaders = async (): Promise<
   { authorization: string } | Record<string, never>
@@ -57,8 +58,14 @@ export const getCacheOptions = async (
 // GET navigations while still blocking cross-site subrequests.
 export const setAuthToken = async (token: string) => {
   const cookies = await nextCookies()
+  const expiresAt = tokenExpiry(token)
   cookies.set("_medusa_jwt", token, {
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: Math.min(
+      60 * 60 * 24 * 7,
+      expiresAt === null
+        ? Infinity
+        : Math.max(0, Math.floor((expiresAt - Date.now()) / 1000))
+    ),
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",

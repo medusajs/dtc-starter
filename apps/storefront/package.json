@@ -12,6 +12,7 @@
     "build": "next build",
     "start": "next start -p 8000",
     "lint": "next lint",
+    "test:unit": "node --test test/*.test.cjs",
     "analyze": "ANALYZE=true next build"
   },
   "dependencies": {

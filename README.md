@@ -178,6 +178,10 @@ The storefront is configured via environment variables in `apps/storefront/.env.
 | `NEXT_PUBLIC_BASE_URL` | Base URL of the storefront | `https://localhost:8000` |
 | `NEXT_PUBLIC_STRIPE_KEY` | Stripe publishable key (optional) | — |
 
+## Customer session expiry
+
+The storefront auth cookie lasts at most seven days and never outlives the JWT's `exp` claim when present. Customer identity uses an uncached backend read, so a previously cached customer does not keep an expired login appearing signed in on subsequent page requests. JWT verification remains the backend's responsibility; reading `exp` only bounds browser cookie lifetime.
+
 ## Resources
 
 - [Medusa Documentation](https://docs.medusajs.com)
