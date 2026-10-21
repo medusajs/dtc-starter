@@ -79,7 +79,7 @@ export const updateCustomer = async (body: HttpTypes.StoreUpdateCustomer) => {
     .catch(medusaError)
 
   const cacheTag = await getCacheTag("customers")
-  revalidateTag(cacheTag)
+  revalidateTag(cacheTag, { expire: 0 })
 
   return updateRes
 }
@@ -221,7 +221,7 @@ async function completeLogin(
   await setAuthToken(token)
 
   const customerCacheTag = await getCacheTag("customers")
-  revalidateTag(customerCacheTag)
+  revalidateTag(customerCacheTag, { expire: 0 })
 
   try {
     await transferCart()
@@ -253,12 +253,12 @@ export async function signout(countryCode: string) {
   await removeAuthToken()
 
   const customerCacheTag = await getCacheTag("customers")
-  revalidateTag(customerCacheTag)
+  revalidateTag(customerCacheTag, { expire: 0 })
 
   await removeCartId()
 
   const cartCacheTag = await getCacheTag("carts")
-  revalidateTag(cartCacheTag)
+  revalidateTag(cartCacheTag, { expire: 0 })
 
   redirect(`/${countryCode}/account`)
 }
@@ -275,7 +275,7 @@ export async function transferCart() {
   await sdk.store.cart.transferCart(cartId, {}, headers)
 
   const cartCacheTag = await getCacheTag("carts")
-  revalidateTag(cartCacheTag)
+  revalidateTag(cartCacheTag, { expire: 0 })
 }
 
 export const addCustomerAddress = async (
@@ -308,7 +308,7 @@ export const addCustomerAddress = async (
     .createAddress(address, {}, headers)
     .then(async () => {
       const customerCacheTag = await getCacheTag("customers")
-      revalidateTag(customerCacheTag)
+      revalidateTag(customerCacheTag, { expire: 0 })
       return { success: true, error: null }
     })
     .catch((err) => {
@@ -327,7 +327,7 @@ export const deleteCustomerAddress = async (
     .deleteAddress(addressId, headers)
     .then(async () => {
       const customerCacheTag = await getCacheTag("customers")
-      revalidateTag(customerCacheTag)
+      revalidateTag(customerCacheTag, { expire: 0 })
       return { success: true, error: null }
     })
     .catch((err) => {
@@ -372,7 +372,7 @@ export const updateCustomerAddress = async (
     .updateAddress(addressId, address, {}, headers)
     .then(async () => {
       const customerCacheTag = await getCacheTag("customers")
-      revalidateTag(customerCacheTag)
+      revalidateTag(customerCacheTag, { expire: 0 })
       return { success: true, error: null }
     })
     .catch((err) => {

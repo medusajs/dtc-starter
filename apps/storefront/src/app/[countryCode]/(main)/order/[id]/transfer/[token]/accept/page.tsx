@@ -5,9 +5,9 @@ import TransferImage from "@modules/order/components/transfer-image"
 export default async function TransferPage({
   params,
 }: {
-  params: { id: string; token: string }
+  params: Promise<{ id: string; token: string }>
 }) {
-  const { id, token } = params
+  const { id, token } = await params
 
   const { success, error } = await acceptTransferRequest(id, token)
 

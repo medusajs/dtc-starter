@@ -101,7 +101,7 @@ Run from the repo root unless noted. Turbo skips missing apps automatically.
 ```bash
 <pm> run lint                          # all apps via turbo
 cd apps/backend && <pm> run lint       # medusa lint
-cd apps/storefront && <pm> run lint    # next lint
+cd apps/storefront && <pm> run lint    # eslint (flat config)
 ```
 
 ### Test (backend only; the storefront has no test suite)
