@@ -9,7 +9,8 @@ export default async function Footer() {
   const [{ collections }, productCategories] = await Promise.all([
     listCollections({ fields: "id,handle,title" }),
     listCategories({
-      fields: "id,name,handle,parent_category_id,*category_children",
+      fields:
+        "id,name,handle,parent_category_id,category_children.id,category_children.name,category_children.handle",
     }),
   ]);
 
