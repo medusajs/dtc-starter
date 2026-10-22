@@ -1,6 +1,8 @@
 "use client"
 
 import { MagnifyingGlass } from "@medusajs/icons"
+import Link from "next/link"
+import { useParams } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
 import type { SearchClient } from "instantsearch.js"
 import {
@@ -115,18 +117,23 @@ const SearchPanel = ({ onNavigate }: { onNavigate: () => void }) => {
 
 const Search = () => {
   const { state: isOpen, open, close } = useToggleState()
+  const { countryCode } = useParams<{ countryCode: string }>()
 
   return (
     <>
-      <button
-        type="button"
-        onClick={open}
+      {/* A real link so search works without JavaScript; with JS it opens the drawer instead. */}
+      <Link
+        href={`/${countryCode}/search`}
+        onClick={(event) => {
+          event.preventDefault()
+          open()
+        }}
         aria-label="Search products"
         className="flex items-center hover:text-ui-fg-base"
         data-testid="nav-search-button"
       >
         <MagnifyingGlass />
-      </button>
+      </Link>
 
       <SearchDrawer isOpen={isOpen} close={close}>
         <InstantSearch

@@ -1,4 +1,5 @@
 import { MedusaContainer } from "@medusajs/framework";
+import { DEFAULT_REGION_STORE_POLICIES } from "../lib/region-store-policies";
 import {
   ContainerRegistrationKeys,
   ModuleRegistrationName,
@@ -104,6 +105,7 @@ export default async function initial_data_seed({
           currency_code: "eur",
           countries,
           payment_providers: ["pp_system_default"],
+          metadata: DEFAULT_REGION_STORE_POLICIES,
         },
       ],
     },

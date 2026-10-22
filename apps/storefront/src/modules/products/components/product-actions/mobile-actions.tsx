@@ -102,6 +102,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
               "!grid-cols-1": isSimple
             })}>
               {!isSimple && <Button
+                type="button"
                 onClick={open}
                 variant="secondary"
                 className="w-full"
@@ -117,6 +118,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                 </div>
               </Button>}
               <Button
+                type="button"
                 onClick={handleAddToCart}
                 disabled={!inStock || !variant}
                 className="w-full"
@@ -167,6 +169,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                       onClick={close}
                       className="bg-white w-12 h-12 rounded-full text-ui-fg-base flex justify-center items-center"
                       data-testid="close-modal-button"
+                      aria-label="Close"
                     >
                       <X />
                     </button>
@@ -182,6 +185,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                                 current={options[option.id]}
                                 updateOption={updateOptions}
                                 title={option.title ?? ""}
+                                name={`mobile-options[${option.id}]`}
                                 disabled={optionsDisabled}
                               />
                             </div>

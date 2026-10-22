@@ -2,13 +2,14 @@
 
 import { addToCart } from "@lib/data/cart"
 import { useIntersection } from "@lib/hooks/use-in-view"
+import { isVariantInStock } from "@lib/util/inventory"
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@modules/common/components/ui"
 import Divider from "@modules/common/components/divider"
 import OptionSelect from "@modules/products/components/product-actions/option-select"
 import { isEqual } from "lodash"
 import { useParams, usePathname, useSearchParams } from "next/navigation"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react"
 import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
 import { useRouter } from "next/navigation"
@@ -28,6 +29,14 @@ const optionsAsKeymap = (
   }, {})
 }
 
+const getInitialVariant = (
+  product: HttpTypes.StoreProduct,
+  variantId: string | null
+) =>
+  product.variants?.find((v) => v.id === variantId) ??
+  product.variants?.find(isVariantInStock) ??
+  product.variants?.[0]
+
 export default function ProductActions({
   product,
   disabled,
@@ -36,17 +45,15 @@ export default function ProductActions({
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  const [options, setOptions] = useState<Record<string, string | undefined>>({})
+  // Preselected on the server so the form posts a valid variant without JavaScript.
+  const [options, setOptions] = useState<Record<string, string | undefined>>(
+    () =>
+      optionsAsKeymap(
+        getInitialVariant(product, searchParams.get("v_id"))?.options ?? null
+      ) ?? {}
+  )
   const [isAdding, setIsAdding] = useState(false)
   const countryCode = useParams().countryCode as string
-
-  // If there is only 1 variant, preselect the options
-  useEffect(() => {
-    if (product.variants?.length === 1) {
-      const variantOptions = optionsAsKeymap(product.variants[0].options)
-      setOptions(variantOptions ?? {})
-    }
-  }, [product.variants])
 
   const selectedVariant = useMemo(() => {
     if (!product.variants || product.variants.length === 0) {
@@ -92,29 +99,10 @@ export default function ProductActions({
     router.replace(pathname + "?" + params.toString())
   }, [selectedVariant, isValidVariant])
 
-  // check if the selected variant is in stock
-  const inStock = useMemo(() => {
-    // If we don't manage inventory, we can always add to cart
-    if (selectedVariant && !selectedVariant.manage_inventory) {
-      return true
-    }
-
-    // If we allow back orders on the variant, we can add to cart
-    if (selectedVariant?.allow_backorder) {
-      return true
-    }
-
-    // If there is inventory available, we can add to cart
-    if (
-      selectedVariant?.manage_inventory &&
-      (selectedVariant?.inventory_quantity || 0) > 0
-    ) {
-      return true
-    }
-
-    // Otherwise, we can't add to cart
-    return false
-  }, [selectedVariant])
+  const inStock = useMemo(
+    () => isVariantInStock(selectedVariant),
+    [selectedVariant]
+  )
 
   const actionsRef = useRef<HTMLDivElement>(null)
 
@@ -135,53 +123,87 @@ export default function ProductActions({
     setIsAdding(false)
   }
 
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    handleAddToCart()
+  }
+
   return (
     <>
       <div className="flex flex-col gap-y-2" ref={actionsRef}>
-        <div>
-          {(product.variants?.length ?? 0) > 1 && (
-            <div className="flex flex-col gap-y-4">
-              {(product.options || []).map((option) => {
-                return (
-                  <div key={option.id}>
-                    <OptionSelect
-                      option={option}
-                      current={options[option.id]}
-                      updateOption={setOptionValue}
-                      title={option.title ?? ""}
-                      data-testid="product-options"
-                      disabled={!!disabled || isAdding}
-                    />
-                  </div>
-                )
-              })}
-              <Divider />
-            </div>
-          )}
-        </div>
-
-        <ProductPrice product={product} variant={selectedVariant} />
-
-        <Button
-          onClick={handleAddToCart}
-          disabled={
-            !inStock ||
-            !selectedVariant ||
-            !!disabled ||
-            isAdding ||
-            !isValidVariant
-          }
-          variant="primary"
-          className="w-full h-10"
-          isLoading={isAdding}
-          data-testid="add-product-button"
+        <form
+          method="post"
+          action={`/${countryCode}/cart/add`}
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-y-2"
+          {...{
+            toolname: "add_to_cart",
+            tooldescription:
+              "Add the selected product variant to the shopping cart",
+          }}
         >
-          {!selectedVariant
-            ? "Select variant"
-            : !inStock || !isValidVariant
-            ? "Out of stock"
-            : "Add to cart"}
-        </Button>
+          <input type="hidden" name="product_id" value={product.id} />
+          <input
+            type="hidden"
+            name="variant_id"
+            value={isValidVariant ? selectedVariant?.id ?? "" : ""}
+          />
+          <input type="hidden" name="quantity" value="1" />
+          <div>
+            {(product.variants?.length ?? 0) > 1 && (
+              <div className="flex flex-col gap-y-4">
+                {(product.options || []).map((option) => {
+                  return (
+                    <div key={option.id}>
+                      <OptionSelect
+                        option={option}
+                        current={options[option.id]}
+                        updateOption={setOptionValue}
+                        title={option.title ?? ""}
+                        name={`options[${option.id}]`}
+                        data-testid="product-options"
+                        disabled={!!disabled || isAdding}
+                      />
+                    </div>
+                  )
+                })}
+                <Divider />
+              </div>
+            )}
+          </div>
+
+          <ProductPrice product={product} variant={selectedVariant} />
+
+          {selectedVariant && isValidVariant && (
+            <p
+              className="text-small-regular text-ui-fg-subtle"
+              data-testid="product-availability"
+            >
+              {inStock ? "In stock" : "Out of stock"}
+            </p>
+          )}
+
+          <Button
+            type="submit"
+            disabled={
+              !inStock ||
+              !selectedVariant ||
+              !!disabled ||
+              isAdding ||
+              !isValidVariant
+            }
+            variant="primary"
+            className="w-full h-10"
+            isLoading={isAdding}
+            data-testid="add-product-button"
+          >
+            {!selectedVariant
+              ? "Select variant"
+              : !inStock || !isValidVariant
+              ? "Out of stock"
+              : "Add to cart"}
+          </Button>
+        </form>
         <MobileActions
           product={product}
           variant={selectedVariant}
