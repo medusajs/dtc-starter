@@ -3,6 +3,9 @@ import { Metadata } from "next"
 import { getStorePolicies } from "@lib/data/store-policies"
 import { PoliciesUnavailable, PolicyPage } from "@modules/policies/templates"
 
+export const dynamic = "force-static"
+export const revalidate = 60
+
 export const metadata: Metadata = {
   title: "Return policy",
   description: "How to return items and get a refund.",

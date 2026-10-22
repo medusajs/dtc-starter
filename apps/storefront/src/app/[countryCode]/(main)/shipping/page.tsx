@@ -7,6 +7,9 @@ import {
   ShippingSummary,
 } from "@modules/policies/templates"
 
+export const dynamic = "force-static"
+export const revalidate = 60
+
 export const metadata: Metadata = {
   title: "Shipping information",
   description: "Shipping rates and delivery times.",

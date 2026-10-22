@@ -8,6 +8,9 @@ import { toJsonLd } from "@lib/util/product-structured-data"
 import { getSiteOrigin, listCountryCodes, STORE_NAME } from "@lib/util/site"
 import { buildRegionsReturnPolicies } from "@lib/util/store-policies"
 
+export const dynamic = "force-static"
+export const revalidate = 60
+
 export async function generateMetadata(props: {
   params: Promise<{ countryCode: string }>
 }): Promise<Metadata> {

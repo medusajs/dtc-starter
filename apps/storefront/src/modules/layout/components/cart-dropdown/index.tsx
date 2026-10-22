@@ -6,6 +6,8 @@ import {
   PopoverPanel,
   Transition,
 } from "@headlessui/react"
+import { retrieveCart } from "@lib/data/cart"
+import { CART_UPDATED_EVENT } from "@lib/util/cart-events"
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@modules/common/components/ui"
@@ -17,11 +19,17 @@ import Thumbnail from "@modules/products/components/thumbnail"
 import { usePathname } from "next/navigation"
 import { Fragment, useEffect, useRef, useState } from "react"
 
+const countItems = (cart?: HttpTypes.StoreCart | null) =>
+  cart?.items?.reduce((acc, item) => acc + item.quantity, 0) || 0
+
 const CartDropdown = ({
-  cart: cartState,
+  cart: serverCart,
 }: {
   cart?: HttpTypes.StoreCart | null
 }) => {
+  // Statically rendered pages can't read the cart cookie, so the cart is loaded in the browser.
+  const [clientCart, setClientCart] = useState<HttpTypes.StoreCart | null>(null)
+  const cartState = serverCart ?? clientCart
   const [activeTimer, setActiveTimer] = useState<NodeJS.Timer | undefined>(
     undefined
   )
@@ -30,13 +38,33 @@ const CartDropdown = ({
   const open = () => setCartDropdownOpen(true)
   const close = () => setCartDropdownOpen(false)
 
-  const totalItems =
-    cartState?.items?.reduce((acc, item) => {
-      return acc + item.quantity
-    }, 0) || 0
+  const totalItems = countItems(cartState)
 
   const subtotal = cartState?.subtotal ?? 0
   const itemRef = useRef<number>(totalItems || 0)
+
+  useEffect(() => {
+    if (serverCart) {
+      return
+    }
+
+    let isInitialLoad = true
+    const load = () =>
+      retrieveCart()
+        .then((cart) => {
+          if (isInitialLoad) {
+            // Don't auto-open the dropdown for items that were already in the cart.
+            itemRef.current = countItems(cart)
+            isInitialLoad = false
+          }
+          setClientCart(cart)
+        })
+        .catch(() => {})
+
+    load()
+    window.addEventListener(CART_UPDATED_EVENT, load)
+    return () => window.removeEventListener(CART_UPDATED_EVENT, load)
+  }, [serverCart])
 
   const timedOpen = () => {
     open()

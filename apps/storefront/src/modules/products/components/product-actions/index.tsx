@@ -2,13 +2,14 @@
 
 import { addToCart } from "@lib/data/cart"
 import { useIntersection } from "@lib/hooks/use-in-view"
+import { notifyCartUpdated } from "@lib/util/cart-events"
 import { isVariantInStock } from "@lib/util/inventory"
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@modules/common/components/ui"
 import Divider from "@modules/common/components/divider"
 import OptionSelect from "@modules/products/components/product-actions/option-select"
 import { isEqual } from "lodash"
-import { useParams, usePathname, useSearchParams } from "next/navigation"
+import { useParams, usePathname } from "next/navigation"
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react"
 import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
@@ -29,13 +30,8 @@ const optionsAsKeymap = (
   }, {})
 }
 
-const getInitialVariant = (
-  product: HttpTypes.StoreProduct,
-  variantId: string | null
-) =>
-  product.variants?.find((v) => v.id === variantId) ??
-  product.variants?.find(isVariantInStock) ??
-  product.variants?.[0]
+const getDefaultVariant = (product: HttpTypes.StoreProduct) =>
+  product.variants?.find(isVariantInStock) ?? product.variants?.[0]
 
 export default function ProductActions({
   product,
@@ -43,15 +39,12 @@ export default function ProductActions({
 }: ProductActionsProps) {
   const router = useRouter()
   const pathname = usePathname()
-  const searchParams = useSearchParams()
-
   // Preselected on the server so the form posts a valid variant without JavaScript.
+  // The page is statically rendered, so `?v_id=` is applied after hydration.
   const [options, setOptions] = useState<Record<string, string | undefined>>(
-    () =>
-      optionsAsKeymap(
-        getInitialVariant(product, searchParams.get("v_id"))?.options ?? null
-      ) ?? {}
+    () => optionsAsKeymap(getDefaultVariant(product)?.options ?? null) ?? {}
   )
+  const [isUrlVariantApplied, setIsUrlVariantApplied] = useState(false)
   const [isAdding, setIsAdding] = useState(false)
   const countryCode = useParams().countryCode as string
 
@@ -83,7 +76,20 @@ export default function ProductActions({
   }, [product.variants, options])
 
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString())
+    const variantId = new URLSearchParams(window.location.search).get("v_id")
+    const variant = product.variants?.find((v) => v.id === variantId)
+    if (variant) {
+      setOptions(optionsAsKeymap(variant.options) ?? {})
+    }
+    setIsUrlVariantApplied(true)
+  }, [product.variants])
+
+  useEffect(() => {
+    if (!isUrlVariantApplied) {
+      return
+    }
+
+    const params = new URLSearchParams(window.location.search)
     const value = isValidVariant ? selectedVariant?.id : null
 
     if (params.get("v_id") === value) {
@@ -97,7 +103,7 @@ export default function ProductActions({
     }
 
     router.replace(pathname + "?" + params.toString())
-  }, [selectedVariant, isValidVariant])
+  }, [selectedVariant, isValidVariant, isUrlVariantApplied])
 
   const inStock = useMemo(
     () => isVariantInStock(selectedVariant),
@@ -119,6 +125,7 @@ export default function ProductActions({
       quantity: 1,
       countryCode,
     })
+    notifyCartUpdated()
 
     setIsAdding(false)
   }

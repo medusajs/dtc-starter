@@ -14,25 +14,10 @@ import { getSiteOrigin, listCountryCodes, STORE_NAME } from "@lib/util/site"
 
 type Props = {
   params: Promise<{ countryCode: string; handle: string }>
-  searchParams: Promise<{ v_id?: string }>
 }
 
-function getImagesForVariant(
-  product: HttpTypes.StoreProduct,
-  selectedVariantId?: string,
-) {
-  if (!selectedVariantId || !product.variants) {
-    return product.images
-  }
-
-  const variant = product.variants!.find((v) => v.id === selectedVariantId)
-  if (!variant || !variant.images?.length) {
-    return product.images
-  }
-
-  const imageIdsMap = new Map(variant.images!.map((i) => [i.id, true]))
-  return product.images?.filter((i) => imageIdsMap.has(i.id)) ?? null
-}
+export const dynamic = "force-static"
+export const revalidate = 60
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params
@@ -121,9 +106,6 @@ const ProductMetaTags = ({
 export default async function ProductPage(props: Props) {
   const params = await props.params
   const region = await getRegion(params.countryCode)
-  const searchParams = await props.searchParams
-
-  const selectedVariantId = searchParams.v_id
 
   if (!region) {
     notFound()
@@ -138,7 +120,6 @@ export default async function ProductPage(props: Props) {
     notFound()
   }
 
-  const images = getImagesForVariant(pricedProduct, selectedVariantId)
   const origin = await getSiteOrigin()
   const structuredData = buildProductStructuredData({
     product: pricedProduct,
@@ -158,7 +139,6 @@ export default async function ProductPage(props: Props) {
         product={pricedProduct}
         region={region}
         countryCode={params.countryCode}
-        images={images ?? []}
       />
     </>
   )
