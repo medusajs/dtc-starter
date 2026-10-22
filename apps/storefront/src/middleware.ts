@@ -103,15 +103,18 @@ export async function middleware(request: NextRequest) {
   const firstPathSegment = request.nextUrl.pathname.split("/")[1]?.toLowerCase()
   const urlHasCountry = firstPathSegment === country.toLowerCase()
 
-  if (urlHasCountry) {
+  // Serve the default region at "/" instead of redirecting, so agents and
+  // crawlers get the storefront content directly from the root URL.
+  if (urlHasCountry || request.nextUrl.pathname === "/") {
+    const response = urlHasCountry
+      ? NextResponse.next()
+      : NextResponse.rewrite(new URL(`/${country}`, request.url))
     if (!cacheIdCookie) {
-      const response = NextResponse.next()
       response.cookies.set("_medusa_cache_id", cacheId, {
         maxAge: 60 * 60 * 24,
       })
-      return response
     }
-    return NextResponse.next()
+    return response
   }
 
   // if the url doesn't have the country, redirect to it

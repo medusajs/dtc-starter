@@ -6,10 +6,12 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import MedusaCTA from "@modules/layout/components/medusa-cta";
 
 export default async function Footer() {
-  const { collections } = await listCollections({
-    fields: "*products",
-  });
-  const productCategories = await listCategories();
+  const [{ collections }, productCategories] = await Promise.all([
+    listCollections({ fields: "id,handle,title" }),
+    listCategories({
+      fields: "id,name,handle,parent_category_id,*category_children",
+    }),
+  ]);
 
   return (
     <footer className="border-t border-ui-border-base w-full">
@@ -34,7 +36,7 @@ export default async function Footer() {
                   data-testid="footer-categories"
                 >
                   {productCategories?.slice(0, 6).map((c) => {
-                    if (c.parent_category) {
+                    if (c.parent_category_id) {
                       return;
                     }
 
@@ -127,6 +129,30 @@ export default async function Footer() {
                     href="/returns"
                   >
                     Return policy
+                  </LocalizedClientLink>
+                </li>
+                <li>
+                  <LocalizedClientLink
+                    className="hover:text-ui-fg-base"
+                    href="/terms"
+                  >
+                    Terms of service
+                  </LocalizedClientLink>
+                </li>
+                <li>
+                  <LocalizedClientLink
+                    className="hover:text-ui-fg-base"
+                    href="/privacy"
+                  >
+                    Privacy policy
+                  </LocalizedClientLink>
+                </li>
+                <li>
+                  <LocalizedClientLink
+                    className="hover:text-ui-fg-base"
+                    href="/contact"
+                  >
+                    Contact
                   </LocalizedClientLink>
                 </li>
                 <li>

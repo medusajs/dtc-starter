@@ -420,6 +420,8 @@ const toUcpCheckoutBody = async (request: Request, cart: HttpTypes.StoreCart) =>
         }
       : undefined,
     links: [
+      { type: "terms_of_service", url: `${base}/terms` },
+      { type: "privacy_policy", url: `${base}/privacy` },
       { type: "refund_policy", url: `${base}/returns` },
       { type: "shipping_policy", url: `${base}/shipping` },
     ],

@@ -20,12 +20,15 @@ export async function generateMetadata(props: {
       "A performant frontend ecommerce starter template with Next.js 16 and Medusa.",
     alternates: {
       canonical: `${origin}/${countryCode}`,
-      languages: Object.fromEntries(
-        listCountryCodes(regions).map((code) => [
-          `en-${code.toUpperCase()}`,
-          `${origin}/${code}`,
-        ])
-      ),
+      languages: {
+        ...Object.fromEntries(
+          listCountryCodes(regions).map((code) => [
+            `en-${code.toUpperCase()}`,
+            `${origin}/${code}`,
+          ])
+        ),
+        "x-default": origin,
+      },
     },
   }
 }

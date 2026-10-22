@@ -52,6 +52,9 @@ ${links.join("\n")}
 ## Policies
 - [Shipping information](${base}/shipping)
 - [Return policy](${base}/returns)
+- [Terms of service](${base}/terms)
+- [Privacy policy](${base}/privacy)
+- [Contact](${base}/contact)
 
 ## For agents
 - [Sitemap](${origin}/sitemap.xml)

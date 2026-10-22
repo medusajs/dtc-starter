@@ -41,3 +41,10 @@ export const ShippingSummary = ({
     <dd>{formatDayRange(policies.transitDays)} business days after dispatch</dd>
   </dl>
 )
+
+export const PlaceholderNotice = () => (
+  <p className="text-ui-fg-subtle" data-testid="policy-placeholder">
+    This is placeholder content from the Medusa starter. Replace it with your
+    store&apos;s own text before launch.
+  </p>
+)
