@@ -87,7 +87,7 @@ export default function CategoryTemplate({
         <Suspense
           fallback={
             <SkeletonProductGrid
-              numberOfProducts={category.products?.length ?? 8}
+              numberOfProducts={12}
             />
           }
         >
