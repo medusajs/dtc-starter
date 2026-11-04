@@ -14,6 +14,10 @@ import { useEffect, useState } from "react"
 
 const PICKUP_OPTION_ON = "__PICKUP_ON"
 const PICKUP_OPTION_OFF = "__PICKUP_OFF"
+const SHIPPING_GROUP_LABEL = "Shipping method"
+const SHIPPING_GROUP_DESCRIPTION = "How would you like you order delivered"
+const STORE_GROUP_LABEL = "Store"
+const STORE_GROUP_DESCRIPTION = "Choose a store near you"
 
 type ShippingProps = {
   cart: HttpTypes.StoreCart
@@ -189,16 +193,17 @@ const Shipping: React.FC<ShippingProps> = ({
           <div className="grid">
             <div className="flex flex-col">
               <span className="font-medium txt-medium text-ui-fg-base">
-                Shipping method
+                {SHIPPING_GROUP_LABEL}
               </span>
               <span className="mb-4 text-ui-fg-muted txt-medium">
-                How would you like you order delivered
+                {SHIPPING_GROUP_DESCRIPTION}
               </span>
             </div>
             <div data-testid="delivery-options-container">
               <div className="pb-8 md:pt-0 pt-2">
                 {hasPickupOptions && (
                   <RadioGroup
+                    aria-label="Pickup preference"
                     value={showPickupOptions}
                     onChange={(_value) => {
                       const id = _pickupMethods.find(
@@ -236,6 +241,7 @@ const Shipping: React.FC<ShippingProps> = ({
                   </RadioGroup>
                 )}
                 <RadioGroup
+                  aria-label={SHIPPING_GROUP_LABEL}
                   value={shippingMethodId}
                   onChange={(v) => {
                     if (v) {
@@ -243,6 +249,7 @@ const Shipping: React.FC<ShippingProps> = ({
                     }
                   }}
                 >
+                  <RadioGroup.Description className="sr-only">{SHIPPING_GROUP_DESCRIPTION}</RadioGroup.Description>
                   {_shippingMethods?.map((option) => {
                     const isDisabled =
                       option.price_type === "calculated" &&
@@ -302,15 +309,16 @@ const Shipping: React.FC<ShippingProps> = ({
             <div className="grid">
               <div className="flex flex-col">
                 <span className="font-medium txt-medium text-ui-fg-base">
-                  Store
+                  {STORE_GROUP_LABEL}
                 </span>
                 <span className="mb-4 text-ui-fg-muted txt-medium">
-                  Choose a store near you
+                  {STORE_GROUP_DESCRIPTION}
                 </span>
               </div>
               <div data-testid="delivery-options-container">
                 <div className="pb-8 md:pt-0 pt-2">
                   <RadioGroup
+                    aria-label={STORE_GROUP_LABEL}
                     value={shippingMethodId}
                     onChange={(v) => {
                       if (v) {
@@ -318,6 +326,7 @@ const Shipping: React.FC<ShippingProps> = ({
                       }
                     }}
                   >
+                    <RadioGroup.Description className="sr-only">{STORE_GROUP_DESCRIPTION}</RadioGroup.Description>
                     {_pickupMethods?.map((option) => {
                       return (
                         <Radio

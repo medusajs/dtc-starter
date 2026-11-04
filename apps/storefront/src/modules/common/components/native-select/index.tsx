@@ -5,6 +5,7 @@ import {
   forwardRef,
   useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react"
@@ -27,6 +28,18 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
       ref,
       () => innerRef.current
     )
+
+    // A returned React form action resets native controls. Keep the reset
+    // default aligned with the controlled choice, as with the billing checkbox.
+    useLayoutEffect(() => {
+      if (props.value === undefined || !innerRef.current) return
+      const values = new Set(
+        (Array.isArray(props.value) ? props.value : [props.value]).map(String)
+      )
+      for (const option of Array.from(innerRef.current.options)) {
+        option.defaultSelected = values.has(option.value)
+      }
+    }, [props.value, children])
 
     useEffect(() => {
       if (innerRef.current && innerRef.current.value === "") {
