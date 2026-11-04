@@ -48,7 +48,7 @@ const OrderDetails = ({ order, showStatus }: OrderDetailsProps) => {
               Payment status:{" "}
               <span
                 className="text-ui-fg-subtle "
-                sata-testid="order-payment-status"
+                data-testid="order-payment-status"
               >
                 {formatStatus(order.payment_status)}
               </span>
