@@ -45,11 +45,15 @@ const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
     setSuccessState(state.success)
   }, [state])
 
+  const fullName = [customer.first_name, customer.last_name]
+    .filter(Boolean)
+    .join(" ")
+
   return (
     <form action={formAction} className="w-full overflow-visible">
       <AccountInfo
         label="Name"
-        currentInfo={`${customer.first_name} ${customer.last_name}`}
+        currentInfo={fullName || "No name"}
         isSuccess={successState}
         isError={!!state?.error}
         clearState={clearState}
