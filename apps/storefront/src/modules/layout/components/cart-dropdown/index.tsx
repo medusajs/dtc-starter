@@ -30,7 +30,7 @@ const CartDropdown = ({
   // Statically rendered pages can't read the cart cookie, so the cart is loaded in the browser.
   const [clientCart, setClientCart] = useState<HttpTypes.StoreCart | null>(null)
   const cartState = serverCart ?? clientCart
-  const [activeTimer, setActiveTimer] = useState<NodeJS.Timer | undefined>(
+  const [activeTimer, setActiveTimer] = useState<NodeJS.Timeout | undefined>(
     undefined
   )
   const [cartDropdownOpen, setCartDropdownOpen] = useState(false)
