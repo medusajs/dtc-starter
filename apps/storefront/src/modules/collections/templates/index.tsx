@@ -33,7 +33,7 @@ export default function CollectionTemplate({
         <Suspense
           fallback={
             <SkeletonProductGrid
-              numberOfProducts={collection.products?.length}
+              numberOfProducts={12}
             />
           }
         >
